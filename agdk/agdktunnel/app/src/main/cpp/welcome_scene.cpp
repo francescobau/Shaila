@@ -40,7 +40,7 @@
 #define NAME_EDIT_SIZE 1.0f, 0.2f
 
 // button defaults:
-#define BUTTON_COLOR 0.0f, 1.0f, 0.0f
+#define BUTTON_COLOR 0.75f, 0.25f, 0.5f
 #define BUTTON_SIZE 0.2f, 0.2f
 #define BUTTON_FONT_SCALE 0.5f
 
@@ -128,9 +128,15 @@ void WelcomeScene::OnButtonClicked(int id) {
     SceneManager *mgr = SceneManager::GetInstance();
 
     if (id == mPlayButtonId) {
-        DataLoaderStateMachine *dataStateMachine =
-                NativeEngine::GetInstance()->GetDataStateMachine();
-        mgr->RequestNewScene(new PlayScene(dataStateMachine->getLevelLoaded()));
+        //Background call from Java
+        /*
+        JNIEnv* env(0);
+        jclass myClass = env->FindClass("com/google/sample/agdktunnel/AGDKTunnelActivity");
+        jmethodID mid = env->GetStaticMethodID(myClass, "setBackground", NULL);
+        env->CallStaticIntMethod(myClass, mid);
+        */
+
+        mgr->RequestNewScene(new PlayScene());
     } else if (id == mStoryButtonId) {
         mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));

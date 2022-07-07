@@ -115,7 +115,7 @@ void DialogScene::RenderBackground() {
 
 bool DialogScene::OnBackKeyPressed() {
     SceneManager *mgr = SceneManager::GetInstance();
-    mgr->RequestNewScene(new LoaderScene());
+    mgr->RequestNewScene(new WelcomeScene());
     return true;
 }
 
@@ -133,19 +133,19 @@ void DialogScene::OnButtonClicked(int id) {
 
     switch (action) {
         case ACTION_RETURN:
-            mgr->RequestNewScene(new LoaderScene());
+            mgr->RequestNewScene(new WelcomeScene());
             break;
         case ACTION_SIGN_IN:
             // note: we can't start playing directly because PlayScene expects the cloud
             // results to be ready when it constructs itself; therefore, WelcomeScene
             // has to make sure of that. So we can't jump directly to PlayScene from here.
-            mgr->RequestNewScene(new LoaderScene());
+            mgr->RequestNewScene(new WelcomeScene());
             break;
         case ACTION_PLAY_WITHOUT_SIGNIN:
-            mgr->RequestNewScene(new PlayScene(/*savedCheckpoint=*/ 0));
+            mgr->RequestNewScene(new PlayScene());
             break;
         case ACTION_SIGN_OUT:
-            mgr->RequestNewScene(new LoaderScene());
+            mgr->RequestNewScene(new WelcomeScene());
             break;
         default:
             // do nothing.

@@ -18,6 +18,8 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -25,15 +27,14 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
+import android.widget.VideoView;
+
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-
 import com.google.androidgamesdk.GameActivity;
 
 public class AGDKTunnelActivity extends GameActivity {
-
-    private PGSManager mPGSManager;
 
     // Some code to load our native library:
     static {
@@ -45,17 +46,26 @@ public class AGDKTunnelActivity extends GameActivity {
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
 
-        // Optional: reload the memory advice library explicitly (it will be loaded
-        // implicitly when loading agdktunnel library as a dependent library)
-        System.loadLibrary("memory_advice");
+        // Load the game library:
+        System.loadLibrary("game");
+    }
 
-        // Optional: reload the native library.
-        // However this is necessary when any of the following happens:
-        //     - agdktunnel library is not configured to the following line in the manifest:
-        //        <meta-data android:name="android.app.lib_name" android:value="agdktunnel" />
-        //     - GameActivity derived class calls to the native code before calling
-        //       the super.onCreate() function.
-        System.loadLibrary("agdktunnel");
+    private void hideSystemUI() {
+        // This will put the game behind any cutouts and waterfalls on devices which have
+        // them, so the corresponding insets will be non-zero.
+        if (VERSION.SDK_INT >= VERSION_CODES.P) {
+            getWindow().getAttributes().layoutInDisplayCutoutMode
+                    = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        }
+        // From API 30 onwards, this is the recommended way to hide the system UI, rather than
+        // using View.setSystemUiVisibility.
+        View decorView = getWindow().getDecorView();
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(),
+                decorView);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
+        controller.hide(WindowInsetsCompat.Type.displayCutout());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
     @Override
@@ -69,60 +79,17 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
-
-        if (isPlayGamesServicesLinked()) {
-            // Initialize Play Games Services
-            mPGSManager = new PGSManager(this);
-        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    public void setBackground() {
+        setContentView(R.layout.activity_game);
 
-        // To learn best practices to handle lifecycle events visit
-        // https://developer.android.com/topic/libraries/architecture/lifecycle
-        if (isPlayGamesServicesLinked()) {
-            mPGSManager.onResume();
-        }
-    }
+        //Background Loop
+        VideoView bg = findViewById(R.id.bg);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.spotifire_bg);
+        bg.setVideoURI(uri);
+        bg.start();
 
-    private void hideSystemUI() {
-        // This will put the game behind any cutouts and waterfalls on devices which have
-        // them, so the corresponding insets will be non-zero.
-        if (VERSION.SDK_INT >= VERSION_CODES.P) {
-            getWindow().getAttributes().layoutInDisplayCutoutMode
-                = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-        }
-        // From API 30 onwards, this is the recommended way to hide the system UI, rather than
-        // using View.setSystemUiVisibility.
-        View decorView = getWindow().getDecorView();
-        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(),
-            decorView);
-        controller.hide(WindowInsetsCompat.Type.systemBars());
-        controller.hide(WindowInsetsCompat.Type.displayCutout());
-        controller.setSystemBarsBehavior(
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-    }
-
-    private boolean isPlayGamesServicesLinked() {
-        String playGamesServicesPlaceholder = "0000000000";
-        return !getString(R.string.game_services_project_id).equals(playGamesServicesPlaceholder);
-    }
-
-    private void loadCloudCheckpoint() {
-        if (isPlayGamesServicesLinked()) {
-            mPGSManager.loadCheckpoint();
-        }
-    }
-
-    private void saveCloudCheckpoint(int level) {
-        if (isPlayGamesServicesLinked()) {
-            mPGSManager.saveCheckpoint(level);
-        }
-    }
-
-    private String getInternalStoragePath() {
-        return getFilesDir().getAbsolutePath();
+        bg.setOnPreparedListener(mepl -> mepl.setLooping(true));
     }
 }

@@ -19,7 +19,7 @@
 
 void RenderBackgroundAnimation(ShapeRenderer *r) {
     float aspect = SceneManager::GetInstance()->GetScreenAspect();
-    static const int BG_RECTS = 50;
+    static const int BG_RECTS = 10;
     static const float RECT_W = 0.3f;
     static const float RECT_H = 0.1f;
     static float rectX[BG_RECTS];
@@ -42,9 +42,15 @@ void RenderBackgroundAnimation(ShapeRenderer *r) {
         r->SetColor(c, c, c);
         r->RenderRect(rectX[i], rectY[i], RECT_W, RECT_H);
 
+        /*
         rectX[i] -= (0.01f + 0.01f * (i % 4));
         if (rectX[i] < -RECT_W * 0.5f) {
             rectX[i] = aspect + RECT_W * 0.5f;
+            rectY[i] = Random(100) / 100.0f;
+        */
+        rectX[i] += (0.01f + 0.01f * (i % 4));
+        if (rectX[i] > aspect + RECT_W * 0.5f) {
+            rectX[i] = - RECT_W * 0.5f;
             rectY[i] = Random(100) / 100.0f;
         }
     }

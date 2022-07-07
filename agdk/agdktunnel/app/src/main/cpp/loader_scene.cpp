@@ -35,8 +35,6 @@ class LoaderScene::TextureLoader {
     int _totalLoadCount = 0;
     int _currentLoadIndex = 0;
     int _remainingLoadCount = 0;
-    bool _on_demand_assets_installed = false;
-    bool _install_time_assets_installed = false;
 
     struct LoadedTextureData {
         LoadedTextureData() : textureSize(0), textureData(NULL), textureName(NULL) {}
@@ -88,68 +86,26 @@ class LoaderScene::TextureLoader {
         loader->LoadingCallback(message);
     }
 
-    bool IsAssetPackInstalled(const char *assetPackName) {
-        if (strcmp(assetPackName, GameAssetManifest::EXPANSION_ASSETPACK_NAME) == 0) {
-            return _on_demand_assets_installed;
-        } else if (strcmp(assetPackName, GameAssetManifest::MAIN_ASSETPACK_NAME) == 0) {
-            return _install_time_assets_installed;
-        } else {
-            return false;
-        }
-    }
-
-    void FindTexturesFromAssetPack(const char *assetPackName) {
-        ALOGI("TextureLoader: counting assets of pack %s", assetPackName);
-        GameAssetManager *gameAssetManager = NativeEngine::GetInstance()->GetGameAssetManager();
-        int assetPackFileCount = 0;
-        const char **assetPackFiles = gameAssetManager->GetGameAssetPackFileList(assetPackName,
-                &assetPackFileCount);
-        if (assetPackFiles != NULL) {
-            _totalLoadCount += assetPackFileCount;
-            _remainingLoadCount += assetPackFileCount;
-            ALOGI("TextureLoader: found %d assets from pack %s", assetPackFileCount, assetPackName);
-        } else {
-            ALOGI("TextureLoader: could not retrieve the list from pack %s", assetPackName);
-        }
-    }
-
     void LoadTexturesFromAssetPack(const char *assetPackName) {
         GameAssetManager *gameAssetManager = NativeEngine::GetInstance()->GetGameAssetManager();
         int assetPackFileCount = 0;
         const char **assetPackFiles = gameAssetManager->GetGameAssetPackFileList(assetPackName,
                 &assetPackFileCount);
-        ALOGI("TextureLoader: loading textures from asset pack %s", assetPackName);
         if (assetPackFiles != NULL) {
             for (int i = 0; i < assetPackFileCount; ++i) {
                 uint64_t fileSize = gameAssetManager->GetGameAssetSize(assetPackFiles[i]);
-                ALOGI("TextureLoader: the size of asset %s is %d",
-                      assetPackFiles[i], (int)fileSize);
                 if (fileSize > 0) {
                     uint8_t *fileBuffer = static_cast<uint8_t *>(malloc(fileSize));
                     if (gameAssetManager->LoadGameAssetAsync(assetPackFiles[i], fileSize,
                                                              fileBuffer, LoadingCallbackProxy,
                                                              this)) {
-                        ALOGI("TextureLoader: started async load %s", assetPackFiles[i]);
-                    } else {
-                        ALOGE("TextureLoader: can't load asset %s", assetPackFiles[i]);
-                        --_remainingLoadCount;
+                        ++_totalLoadCount;
+                        ++_remainingLoadCount;
+                        ALOGI("Started async load %s", assetPackFiles[i]);
                     }
                 }
             }
-        } else {
-            ALOGI("LoaderScene: could not retrieve the list from pack %s", assetPackName);
         }
-
-        if (strcmp(assetPackName, GameAssetManifest::EXPANSION_ASSETPACK_NAME) == 0) {
-            _on_demand_assets_installed = true;
-        } else if (strcmp(assetPackName, GameAssetManifest::MAIN_ASSETPACK_NAME) == 0) {
-            _install_time_assets_installed = true;
-        }
-    }
-
-    void InstallTexturesFromAssetPack(const char *assetPackName) {
-        GameAssetManager *gameAssetManager = NativeEngine::GetInstance()->GetGameAssetManager();
-        gameAssetManager->RequestDownload(assetPackName);
     }
 
     void CreateTextures() {
@@ -167,37 +123,13 @@ LoaderScene::LoaderScene() : mTextureLoader(new LoaderScene::TextureLoader()) {
     mLoadingWidget = NULL;
     mTextBoxId = -1;
     mStartTime = 0;
-    mDataStateMachine = NativeEngine::GetInstance()->BeginSavedGameLoad();
 }
 
 LoaderScene::~LoaderScene() {
 }
 
 void LoaderScene::DoFrame() {
-    GameAssetManager *gameAssetManager = NativeEngine::GetInstance()->GetGameAssetManager();
-    if (!mTextureLoader->IsAssetPackInstalled(GameAssetManifest::MAIN_ASSETPACK_NAME) &&
-            gameAssetManager->GetGameAssetPackStatus(GameAssetManifest::MAIN_ASSETPACK_NAME) ==
-            GameAssetManager::GAMEASSET_READY) {
-        ALOGI("LoaderScene: attempting to install asset pack %s",
-            GameAssetManifest::MAIN_ASSETPACK_NAME);
-        mTextureLoader->LoadTexturesFromAssetPack(GameAssetManifest::MAIN_ASSETPACK_NAME);
-    }
-    if (gameAssetManager->GetGameAssetPackStatus(GameAssetManifest::EXPANSION_ASSETPACK_NAME) ==
-            GameAssetManager::GAMEASSET_NEEDS_DOWNLOAD) {
-        ALOGI("LoaderScene: downloading asset pack %s",
-            GameAssetManifest::EXPANSION_ASSETPACK_NAME);
-        mTextureLoader->InstallTexturesFromAssetPack(
-            GameAssetManifest::EXPANSION_ASSETPACK_NAME);
-    } else if (!mTextureLoader->IsAssetPackInstalled(GameAssetManifest::EXPANSION_ASSETPACK_NAME) &&
-            gameAssetManager->GetGameAssetPackStatus(GameAssetManifest::EXPANSION_ASSETPACK_NAME) ==
-            GameAssetManager::GAMEASSET_READY) {
-        ALOGI("LoaderScene: attempting to install asset pack %s",
-            GameAssetManifest::EXPANSION_ASSETPACK_NAME);
-        mTextureLoader->LoadTexturesFromAssetPack(GameAssetManifest::EXPANSION_ASSETPACK_NAME);
-    }
-
-    if (mTextureLoader->NumberRemainingToLoad() == 0 &&
-            mDataStateMachine->isLoadingDataCompleted()) {
+    if (mTextureLoader->NumberRemainingToLoad() == 0) {
         mTextureLoader->CreateTextures();
 
         // Inform performance tuner we are done loading
@@ -214,12 +146,9 @@ void LoaderScene::DoFrame() {
         SceneManager *mgr = SceneManager::GetInstance();
         mgr->RequestNewScene(new WelcomeScene());
     } else {
-        float totalLoad = mTextureLoader->TotalNumberToLoad() + DATA_LOAD_DELTA *
-                mDataStateMachine->getTotalSteps();
-        float completedLoad = mTextureLoader->NumberCompetedLoading() + DATA_LOAD_DELTA *
-                mDataStateMachine->getStepsCompleted();
-
-        int loadingPercentage = static_cast<int>(completedLoad * 100 / totalLoad);
+        float totalLoad = mTextureLoader->TotalNumberToLoad();
+        float completedLoad = mTextureLoader->NumberCompetedLoading();
+        int loadingPercentage = static_cast<int>((completedLoad / totalLoad) * 100.0f);
         char progressString[64];
         sprintf(progressString, "%s... %d%%", S_LOADING, loadingPercentage);
         mLoadingWidget->SetText(progressString);
@@ -236,12 +165,15 @@ void LoaderScene::OnCreateWidgets() {
             ->SetCenter(TEXT_POS);
     mTextBoxId = mLoadingWidget->GetId();
 
-    ALOGI("LoaderScene: starting loading work");
     timespec currentTimeSpec;
     clock_gettime(CLOCK_MONOTONIC, &currentTimeSpec);
     mStartTime = currentTimeSpec.tv_sec * 1000 + (currentTimeSpec.tv_nsec / 1000000);
-    mTextureLoader->FindTexturesFromAssetPack(GameAssetManifest::MAIN_ASSETPACK_NAME);
-    mTextureLoader->FindTexturesFromAssetPack(GameAssetManifest::EXPANSION_ASSETPACK_NAME);
+    mTextureLoader->LoadTexturesFromAssetPack(GameAssetManifest::MAIN_ASSETPACK_NAME);
+    GameAssetManager *gameAssetManager = NativeEngine::GetInstance()->GetGameAssetManager();
+    if (gameAssetManager->GetGameAssetPackStatus(GameAssetManifest::EXPANSION_ASSETPACK_NAME) ==
+        GameAssetManager::GAMEASSET_READY) {
+        mTextureLoader->LoadTexturesFromAssetPack(GameAssetManifest::EXPANSION_ASSETPACK_NAME);
+    }
 }
 
 void LoaderScene::RenderBackground() {

@@ -15,5 +15,3 @@
  */
 
 include ':app'
-include ':install_time_assets'
-include ':on_demand_assets'

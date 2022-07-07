@@ -24,8 +24,6 @@
 #include "shape_renderer.hpp"
 #include "text_renderer.hpp"
 #include "util.hpp"
-#include "input_util.hpp"
-#include "loader_scene.hpp"
 
 class OurShader;
 
@@ -36,8 +34,6 @@ class OurShader;
 class PlayScene : public Scene {
 public:
     PlayScene();
-
-    PlayScene(int savedLevel);
 
     virtual void OnStartGraphics();
 
@@ -59,11 +55,7 @@ public:
 
     virtual void OnKeyDown(int keyCode);
 
-    virtual void OnKeyUp(int keyCode);
-
     virtual void OnPause();
-
-    virtual void OnResume();
 
 protected:
     // shaders
@@ -76,10 +68,6 @@ protected:
     // shape and text renderers we use when rendering the HUD
     ShapeRenderer *mShapeRenderer;
     TextRenderer *mTextRenderer;
-#ifdef TOUCH_INDICATOR_MODE
-    // Flat color rectangle for latency measurement
-    ShapeRenderer *mRectRenderer;
-#endif // TOUCH_INDICATOR_MODE
 
     // matrices
     glm::mat4 mViewMat, mProjMat;
@@ -103,8 +91,11 @@ protected:
     // current difficulty level
     int mDifficulty;
 
+    // should we use cloud save? If not, we will save progress to local data only.
+    bool mUseCloudSave;
+
     // greatest checkpoint level attained by player (loaded from file)
-    int mSavedLevel;
+    int mSavedCheckpoint;
 
     // vertex buffer and index buffer to render tunnel
     SimpleGeom *mTunnelGeom;
@@ -129,7 +120,7 @@ protected:
     ObstacleGenerator mObstacleGen;
 
     // touch pointer ID and anchor position (where touch started)
-    static const int STEERING_NONE = 0, STEERING_TOUCH = 1, STEERING_JOY = 2, STEERING_KEY = 3;
+    static const int STEERING_NONE = 0, STEERING_TOUCH = 1, STEERING_JOY = 2;
     int mSteering;  // is player steering at the moment? If so, how?
     int mPointerId;  // if so, what's the pointer ID
     float mPointerAnchorX, mPointerAnchorY; // where the drag started
@@ -140,9 +131,6 @@ protected:
     // moving average filter for input (on mShipSteerX and mShipSteerY)
     static const int NOISE_FILTER_SAMPLES = 5;
     float mFilteredSteerX, mFilteredSteerZ;
-
-    // Bitmask for movement keys: W = 1, A = 2, S = 4, D = 8
-    int mMotionKeyBitmask;
 
     // frame clock -- it computes the deltas between successive frames so we can
     // update stuff properly
@@ -161,7 +149,6 @@ protected:
     static const int MENU_NONE = 0;
     static const int MENU_PAUSE = 1; // pause menu
     static const int MENU_LEVEL = 2; // select starting level
-    static const int MENU_LOADING = 3; // loading menu
     int mMenu;
 
     // identifiers for each menu item
@@ -169,11 +156,10 @@ protected:
     static const int MENUITEM_QUIT = 1;
     static const int MENUITEM_START_OVER = 2;
     static const int MENUITEM_RESUME = 3;
-    static const int MENUITEM_LOADING = 4;
-    static const int MENUITEM_COUNT = 5;
+    static const int MENUITEM_COUNT = 4;
 
     // text for each menu item
-    char *mMenuItemText[MENUITEM_COUNT];
+    const char *mMenuItemText[MENUITEM_COUNT];
 
     // menu items on current menu
     static const int MENUITEMS_MAX = 4;
@@ -213,6 +199,9 @@ protected:
 
     // last subsection were an ambient sound was emitted
     int mLastAmbientBeepEmitted;
+
+    // name of the save file
+    char *mSaveFileName;
 
     // pending to show a "checkpoint saved" sign?
     bool mCheckpointSignPending;
@@ -283,15 +272,27 @@ protected:
     // updates which menu item is selected based on where the screen was touched
     void UpdateMenuSelFromTouch(float x, float y);
 
+    // writes to the local save file
+    void WriteSaveFile(int level);
+
+    // loads progress from the local save file and/or cloudsave
+    void LoadProgress();
+
+    // saves progress to the local save file and/or cloudsave
+    void SaveProgress();
+
+    // returns whether or not this level is a "checkpoint level" (that is,
+    // where progress should be saved)
+    bool IsCheckpointLevel() {
+        return 0 == mDifficulty % LEVELS_PER_CHECKPOINT;
+    }
+
     // shows the sign that tells the player they've reached a new level.
     // (like "LEVEL 5").
     void ShowLevelSign();
 
     // update projection matrix
     void UpdateProjectionMatrix();
-
-    // apply movement if key is pressed
-    void OnMovementKey();
 };
 
 #endif
