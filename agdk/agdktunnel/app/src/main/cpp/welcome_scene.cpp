@@ -18,6 +18,7 @@
 #include "dialog_scene.hpp"
 #include "play_scene.hpp"
 #include "welcome_scene.hpp"
+#include "jni_util.hpp"
 
 #include "blurb.inl"
 #include "strings.inl"
@@ -129,12 +130,15 @@ void WelcomeScene::OnButtonClicked(int id) {
 
     if (id == mPlayButtonId) {
         //Background call from Java
-        /*
-        JNIEnv* env(0);
-        jclass myClass = env->FindClass("com/google/sample/agdktunnel/AGDKTunnelActivity");
-        jmethodID mid = env->GetStaticMethodID(myClass, "setBackground", NULL);
-        env->CallStaticIntMethod(myClass, mid);
-        */
+
+        //JniSetup *js = GetJNISetup();
+        //jmethodID mid = js->env->GetMethodID(js->clazz, "change", "()V");
+        //js->env->CallVoidMethod(js->clazz, mid);
+        //mid = js->env->GetMethodID(js->clazz, "onRestart", "()");
+        //js->env->CallVoidMethod(js->clazz, mid);
+        //mid = js->env->GetMethodID(js->clazz, "setBackground", "()V");
+        //js->env->CallVoidMethod(js->clazz, mid);
+
 
         mgr->RequestNewScene(new PlayScene());
     } else if (id == mStoryButtonId) {

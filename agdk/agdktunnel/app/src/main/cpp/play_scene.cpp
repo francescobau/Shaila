@@ -67,8 +67,8 @@ PlayScene::PlayScene() : Scene() {
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
-    mPlayerPos = glm::vec3(0.0f, 0.0f, 0.0f); // center
-    mPlayerDir = glm::vec3(0.0f, 1.0f, 0.0f); // forward
+    mPlayerPos = glm::vec3 (0.0f, 0.0f, 0.0f); // center
+    mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // forward //right
     mDifficulty = 0;
     mUseCloudSave = false;
 
@@ -318,7 +318,7 @@ void PlayScene::DoFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // rotate the view matrix according to current roll angle
-    glm::vec3 upVec = glm::vec3(-sin(mRollAngle), 0, cos(mRollAngle));
+    glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     // set up view matrix according to player's ship position and direction
     mViewMat = glm::lookAt(mPlayerPos, mPlayerPos + mPlayerDir, upVec);
