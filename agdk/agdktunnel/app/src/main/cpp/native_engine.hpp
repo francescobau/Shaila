@@ -19,9 +19,9 @@
 
 #include "common.hpp"
 #include "game_asset_manager.hpp"
-#include "memory_consumer.hpp"
+
 #include "texture_manager.hpp"
-#include "tuning_manager.hpp"
+
 
 struct NativeEngineSavedState {
     bool mHasFocus;
@@ -50,10 +50,10 @@ public:
     TextureManager *GetTextureManager() { return mTextureManager; }
 
     // returns the tuning manager instance
-    TuningManager *GetTuningManager() { return mTuningManager; }
+    //TuningManager *GetTuningManager() { return mTuningManager; }
 
     // returns the memory consumer instance
-    MemoryConsumer *GetMemoryConsumer() { return mMemoryConsumer; }
+    //MemoryConsumer *GetMemoryConsumer() { return mMemoryConsumer; }
 
     // returns the (singleton) instance
     static NativeEngine *GetInstance();
@@ -105,10 +105,10 @@ private:
     TextureManager *mTextureManager;
 
     // Tuning manager instance
-    TuningManager *mTuningManager;
+    //TuningManager *mTuningManager;
 
     // Memory consumer instance
-    MemoryConsumer *mMemoryConsumer;
+    //MemoryConsumer *mMemoryConsumer;
 
     // is this the first frame we're drawing?
     bool mIsFirstFrame;

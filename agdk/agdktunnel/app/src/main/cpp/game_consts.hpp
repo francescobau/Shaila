@@ -27,13 +27,13 @@
 #define TUNNEL_HALF_H 10.0f
 
 // length of each tunnel section
-#define TUNNEL_SECTION_LENGTH 150.0f
+#define TUNNEL_SECTION_LENGTH 100.0f
 
 // number of tunnel sections to render ahead
 #define RENDER_TUNNEL_SECTION_COUNT 4
 
 // An obstacle is a grid of boxes. This indicates how many boxes by how many boxes this grid is.
-#define OBS_GRID_SIZE 5
+#define OBS_GRID_SIZE 9
 
 // This is how wide each of the grid cells are
 #define OBS_CELL_SIZE ((2*TUNNEL_HALF_W)/(float)OBS_GRID_SIZE)
@@ -42,7 +42,7 @@
 #define OBS_BOX_SIZE (0.8f * OBS_CELL_SIZE)
 
 // size of bonus box
-#define OBS_BONUS_SIZE (0.3f * OBS_CELL_SIZE)
+#define OBS_BONUS_SIZE (0.5f * OBS_CELL_SIZE)
 
 // at what distance (in tunnel sections) from the start position do obstacles start to appear?
 #define OBS_START_SECTION 4
@@ -54,7 +54,7 @@
 #define MAX_DELTA_T 0.05f
 
 // player's speed
-#define PLAYER_SPEED 80.0f
+#define PLAYER_SPEED 40.0f
 
 // how much the player's speed increases when we go up one difficulty level
 #define PLAYER_SPEED_INC_PER_LEVEL 10.0f

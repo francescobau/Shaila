@@ -15,20 +15,20 @@
  */
 
 #include <cstdio>
-#include "anim.hpp"
+
 #include "ascii_to_geom.hpp"
 #include "game_consts.hpp"
 #include "our_shader.hpp"
 #include "play_scene.hpp"
 #include "texture_manager.hpp"
 #include "util.hpp"
-#include "welcome_scene.hpp"
-#include "welcome_scene.hpp"
+
 
 #include "data/ascii_art.inl"
 #include "data/cube_geom.inl"
 #include "data/strings.inl"
 #include "data/tunnel_geom.inl"
+#include "welcome_scene.hpp"
 
 #define WALL_TEXTURE_SIZE 64
 
@@ -68,13 +68,15 @@ PlayScene::PlayScene() : Scene() {
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
     mPlayerPos = glm::vec3 (0.0f, 0.0f, 0.0f); // center
-    mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // forward //right
+    mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // right
+
     mDifficulty = 0;
     mUseCloudSave = false;
 
     mCubeGeom = NULL;
     mTunnelGeom = NULL;
 
+    pointerDownTimer = 0;
     mObstacleCount = 0;
     mFirstObstacle = 0;
     mFirstSection = 0;
@@ -266,7 +268,7 @@ void PlayScene::OnStartGraphics() {
     TextureManager *textureManager = NativeEngine::GetInstance()->GetTextureManager();
     char textureName[32];
     for (int wallIndex = 0; wallIndex < MAX_WALL_TEXTURES; ++wallIndex) {
-        snprintf(textureName, 32, "textures/wall%d.tex", wallIndex + 1);
+        snprintf(textureName, 32, "textures/wall%d.ktx2", wallIndex + 1);
         uint64_t textureReference = textureManager->GetTextureReference(
                 textureName);
         if (textureReference != TextureManager::INVALID_TEXTURE_REF) {
@@ -380,18 +382,28 @@ void PlayScene::DoFrame() {
 
     // move player
     if (mLives > 0) {
-        float steerX = mFilteredSteerX, steerZ = mFilteredSteerZ;
+
+
         if (mSteering == STEERING_TOUCH) {
             // touch steering
-            mPlayerPos.x = Approach(mPlayerPos.x, steerX, PLAYER_MAX_LAT_SPEED * deltaT);
-            mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
+
+            if(!pointerDownTimer){
+                mSteering = STEERING_NONE;  //jump finished
+            } else {
+                //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
+                if(pointerDownTimer > 30)
+                    mPlayerPos.z = mPlayerPos.z + 1.0/15.0; //first half of action, jump of dim 2
+                else
+                    mPlayerPos.z = mPlayerPos.z - 1.0/15.0; //second half of action, falling
+                pointerDownTimer--;
+            }
         } else if (mSteering == STEERING_JOY) {
             // joystick steering
-            mPlayerPos.x += deltaT * steerX;
-            mPlayerPos.z += deltaT * steerZ;
+            //mPlayerPos.x += deltaT * steerX;
+            //mPlayerPos.z += deltaT * steerZ;
         }
     }
-    mPlayerPos.y += deltaT * mPlayerSpeed;
+    mPlayerPos.y += deltaT * mPlayerSpeed;  // run
 
     // make sure player didn't leave tunnel
     mPlayerPos.x = Clamp(mPlayerPos.x, PLAYER_MIN_X, PLAYER_MAX_X);
@@ -420,7 +432,7 @@ void PlayScene::DoFrame() {
 
     // did the game expire?
     if (mLives <= 0 && Clock() > mGameOverExpire) {
-        SceneManager::GetInstance()->RequestNewScene(new WelcomeScene());
+        SceneManager::GetInstance()->RequestNewScene(new PlayScene());
 
     }
 
@@ -574,12 +586,15 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
             UpdateMenuSelFromTouch(x, y);
             mMenuTouchActive = true;
         }
-    } else if (mSteering != STEERING_TOUCH) {
+    } else if(!pointerDownTimer) {
         mPointerId = pointerId;
         mPointerAnchorX = x;
         mPointerAnchorY = y;
-        mShipAnchorX = mPlayerPos.x;
-        mShipAnchorZ = mPlayerPos.z;
+        //mPlayerPos.z = mPlayerPos.z + 1;
+
+        pointerDownTimer = 60;
+        //mShipAnchorX = mPlayerPos.x;
+        //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
     }
 }
@@ -590,8 +605,9 @@ void PlayScene::OnPointerUp(int pointerId, const struct PointerCoords *coords) {
             mMenuTouchActive = false;
             HandleMenu(mMenuItems[mMenuSel]);
         }
-    } else if (mSteering == STEERING_TOUCH && pointerId == mPointerId) {
-        mSteering = STEERING_NONE;
+    } else if (pointerId == mPointerId) {
+        //mPlayerPos.z = mPlayerPos.z - 1;
+        //mSteering = STEERING_NONE;
     }
 }
 
@@ -673,7 +689,7 @@ void PlayScene::RenderMenu() {
 
     glDisable(GL_DEPTH_TEST);
 
-    RenderBackgroundAnimation(mShapeRenderer);
+    //RenderBackgroundAnimation(mShapeRenderer);
 
     float scaleFactor = SineWave(1.0f, MENUITEM_PULSE_AMOUNT, MENUITEM_PULSE_PERIOD, 0.0f);
 

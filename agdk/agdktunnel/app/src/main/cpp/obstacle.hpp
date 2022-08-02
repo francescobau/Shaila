@@ -28,7 +28,7 @@
 // The obstacle grid lies on the XZ plane.
 class Obstacle {
 public:
-    bool grid[OBS_GRID_SIZE][OBS_GRID_SIZE]; // indexed as [col][row]
+    bool grid[OBS_GRID_SIZE][OBS_GRID_SIZE]; // indexed as [col][row][depth]
     int style;  // obstacle style (currently, this specifies its color).
     int bonusRow, bonusCol;
     const static int STYLE_NULL = 0;  // a null obstacle (not displayed)

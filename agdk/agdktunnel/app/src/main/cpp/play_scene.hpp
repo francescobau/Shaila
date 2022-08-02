@@ -196,6 +196,7 @@ protected:
     // what was the section number of the last obstacle with which the player crashed?
     int mLastCrashSection;
 
+    int pointerDownTimer;    //timer to keep the jump
 
     // last subsection were an ambient sound was emitted
     int mLastAmbientBeepEmitted;

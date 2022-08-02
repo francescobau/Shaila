@@ -41,7 +41,7 @@ private:
         mWidth = mAspect;
         mHeight = 1.0f;
         mCenterX = mCenterY = 0.0f;
-        mScale = 1.0f;
+        mScale = 0.5f;
         CreateGeom(umin, vmin, umax, vmax);
     }
 

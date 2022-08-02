@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "anim.hpp"
+
 #include "game_asset_manager.hpp"
 #include "game_asset_manifest.hpp"
 #include "loader_scene.hpp"
-#include "tuning_manager.hpp"
-#include "welcome_scene.hpp"
+
+#include "play_scene.hpp"
 #include "strings.inl"
 
 #define TEXT_COLOR 0.0f, 1.0f, 0.0f
@@ -60,6 +60,7 @@ class LoaderScene::TextureLoader {
             ALOGE("Timed-out waiting for textures to load");
             exit(1);
         }
+
     }
 
     int TotalNumberToLoad() const { return _totalLoadCount; }
@@ -133,8 +134,8 @@ void LoaderScene::DoFrame() {
         mTextureLoader->CreateTextures();
 
         // Inform performance tuner we are done loading
-        TuningManager *tuningManager = NativeEngine::GetInstance()->GetTuningManager();
-        tuningManager->FinishLoading();
+        //TuningManager *tuningManager = NativeEngine::GetInstance()->GetTuningManager();
+        //tuningManager->FinishLoading();
 
         timespec currentTimeSpec;
         clock_gettime(CLOCK_MONOTONIC, &currentTimeSpec);
@@ -144,7 +145,7 @@ void LoaderScene::DoFrame() {
         loadTime /= 1000.0f;
         ALOGI("Load complete in %.1f seconds", loadTime);
         SceneManager *mgr = SceneManager::GetInstance();
-        mgr->RequestNewScene(new WelcomeScene());
+        mgr->RequestNewScene(new PlayScene());
     } else {
         float totalLoad = mTextureLoader->TotalNumberToLoad();
         float completedLoad = mTextureLoader->NumberCompetedLoading();
@@ -177,5 +178,5 @@ void LoaderScene::OnCreateWidgets() {
 }
 
 void LoaderScene::RenderBackground() {
-    RenderBackgroundAnimation(mShapeRenderer);
+    //RenderBackgroundAnimation(mShapeRenderer);
 }
