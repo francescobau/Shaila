@@ -45,7 +45,7 @@
 #define OBS_BONUS_SIZE (0.5f * OBS_CELL_SIZE)
 
 // at what distance (in tunnel sections) from the start position do obstacles start to appear?
-#define OBS_START_SECTION 4
+#define OBS_START_SECTION 1
 
 // once a tunnel section is this far behind the player, delete it
 #define SHIFT_THRESH 20.0f
@@ -113,7 +113,7 @@
 #define LIFE_SCALE_Y 1.5f
 
 // how many lives the player has
-#define PLAYER_LIVES 4
+#define PLAYER_LIVES 3
 
 // how many points player gets for picking up a bonus
 #define BONUS_POINTS 50

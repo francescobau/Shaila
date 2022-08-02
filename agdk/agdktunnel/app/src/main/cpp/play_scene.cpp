@@ -321,9 +321,10 @@ void PlayScene::DoFrame() {
 
     // rotate the view matrix according to current roll angle
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
+    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 10.0f, mPlayerPos.y + 10.0f, 2.0f);
 
     // set up view matrix according to player's ship position and direction
-    mViewMat = glm::lookAt(mPlayerPos, mPlayerPos + mPlayerDir, upVec);
+    mViewMat = glm::lookAt(cameraPos, cameraPos + mPlayerDir, upVec);
 
     // render tunnel walls
     RenderTunnel();
@@ -386,22 +387,22 @@ void PlayScene::DoFrame() {
 
         if (mSteering == STEERING_TOUCH) {
             // touch steering
-
+            //mPlayerPos.z += 1/15.0; //jetpack joyride style
             if(!pointerDownTimer){
                 mSteering = STEERING_NONE;  //jump finished
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
                 if(pointerDownTimer > 30)
-                    mPlayerPos.z = mPlayerPos.z + 1.0/15.0; //first half of action, jump of dim 2
+                    mPlayerPos.z += 1.0/15.0; //first half of action, jump of dim 2
                 else
-                    mPlayerPos.z = mPlayerPos.z - 1.0/15.0; //second half of action, falling
+                    mPlayerPos.z -= 1.0/15.0; //second half of action, falling
                 pointerDownTimer--;
             }
         } else if (mSteering == STEERING_JOY) {
             // joystick steering
             //mPlayerPos.x += deltaT * steerX;
             //mPlayerPos.z += deltaT * steerZ;
-        }
+        } //else mPlayerPos.z -= 1/15.0; //jetpack joyride style
     }
     mPlayerPos.y += deltaT * mPlayerSpeed;  // run
 
