@@ -23,11 +23,13 @@ void Obstacle::PutRandomBonus() {
         return;
     }
 
-    bool candidate[OBS_GRID_SIZE][OBS_GRID_SIZE];
-    memset(candidate, 0, sizeof(candidate));
+
+
+    //bool candidate[OBS_GRID_SIZE][OBS_GRID_SIZE];
+    //memset(candidate, 0, sizeof(candidate));
 
     int r, c;
-    int i, j;
+    //int i, j;
 
     // (This is the most deeply indented code I have written in my life)
     // It goes through the grid and marks all the squares that are adjacent to
@@ -35,17 +37,14 @@ void Obstacle::PutRandomBonus() {
     for (r = 0; r < OBS_GRID_SIZE; r++) {
         for (c = 0; c < OBS_GRID_SIZE; c++) {
             if (grid[c][r]) {
-                for (i = r - 1; i <= r + 1; i++) {
-                    for (j = c - 1; j <= c + 1; j++) {
-                        if (i >= 0 && i < OBS_GRID_SIZE && j >= 0 && j < OBS_GRID_SIZE) {
-                            candidate[j][i] = true;
-                        }
-                    }
-                }
+                //candidate[c][r+1] = true;
+                bonusCol = c;
+                bonusRow = r+1;
             }
         }
     }
 
+    /*
     // now we randomly choose one of the candidates
     int r0 = Random(0, OBS_GRID_SIZE);
     int c0 = Random(0, OBS_GRID_SIZE);
@@ -62,4 +61,5 @@ void Obstacle::PutRandomBonus() {
             }
         }
     }
+    */
 }
