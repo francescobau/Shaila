@@ -147,8 +147,8 @@ void UiScene::DoFrame() {
     }
 
     // Render memory statistics
-    //NativeEngine::GetInstance()->GetMemoryConsumer()->RenderMemoryStatistics(
-    //    mTextRenderer);
+    NativeEngine::GetInstance()->GetMemoryConsumer()->RenderMemoryStatistics(
+        mTextRenderer);
 
     glEnable(GL_DEPTH_TEST);
 }

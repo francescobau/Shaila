@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef agdktunnel_engine_hpp
-#define agdktunnel_engine_hpp
-
-// These are the include files that comprise the "engine" part of the game -- that is,
-// the parts of it that are not game-specific.
 #include "common.hpp"
-#include "indexbuf.hpp"
-#include "joystick-support.hpp"
+#include "jni_util.hpp"
 #include "native_engine.hpp"
-#include "our_key_codes.hpp"
-#include "scene.hpp"
-#include "scene_manager.hpp"
-#include "shader.hpp"
-#include "simplegeom.hpp"
-#include "texture.hpp"
-#include "vertexbuf.hpp"
 
-#endif
+static struct JniSetup _jni_setup = {0};
+
+struct JniSetup *GetJNISetup() {
+    if (!_jni_setup.env) {
+        _jni_setup.env = NativeEngine::GetInstance()->GetJniEnv();
+        _jni_setup.thiz = NativeEngine::GetInstance()->GetAndroidApp()->activity->javaGameActivity;
+        _jni_setup.clazz = _jni_setup.env->GetObjectClass(_jni_setup.thiz);
+    }
+    return &_jni_setup;
+}

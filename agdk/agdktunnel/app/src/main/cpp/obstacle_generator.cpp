@@ -55,69 +55,62 @@ void ObstacleGenerator::Generate(Obstacle *result) {
 }
 
 void ObstacleGenerator::FillRow(Obstacle *result, int row) {
-    //for (int i = 0; i < OBS_GRID_SIZE; ++i) {
-    //    result->grid[][row] = true;
-    //}
-    result->grid[4][4] = true;
+    for (int i = 0; i < OBS_GRID_SIZE; ++i) {
+        result->grid[i][row] = true;
+    }
 }
 
 void ObstacleGenerator::FillCol(Obstacle *result, int col) {
-    //for (int i = 0; i < OBS_GRID_SIZE; ++i) {
-    //    result->grid[col][i] = true;
-    //}
-    result->grid[4][4] = true;
+    for (int i = 0; i < OBS_GRID_SIZE; ++i) {
+        result->grid[col][i] = true;
+    }
 }
 
 void ObstacleGenerator::GenEasy(Obstacle *result) {
     int n = Random(4);
-    //int i, j;
-    //Obstacle *o = result; // shorthand
+    int i, j;
+    Obstacle *o = result; // shorthand
     switch (n) {
         case 0:
-            //i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
-            //FillRow(result, i + (Random(2) ? 1 : -1)); // horizontal bar next to i
-            result->grid[4][4] = true;
+            i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
+            FillRow(result, i + (Random(2) ? 1 : -1)); // horizontal bar next to i
             break;
         case 1:
-            //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
-            //FillCol(result, i + (Random(2) ? 1 : -1)); // vertical bar next to i
+            i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
+            FillCol(result, i + (Random(2) ? 1 : -1)); // vertical bar next to i
             break;
         case 2:
-            //FillRow(result, 0);
-            //FillRow(result, OBS_GRID_SIZE - 1);
-            //FillCol(result, 0);
-            //FillCol(result, OBS_GRID_SIZE - 1);
+            FillRow(result, 0);
+            FillRow(result, OBS_GRID_SIZE - 1);
+            FillCol(result, 0);
+            FillCol(result, OBS_GRID_SIZE - 1);
             break;
         default:
-            //i = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
-            //j = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
-            //o->grid[i][j] = o->grid[i + 1][j] = o->grid[i][j + 1] = o->grid[i + 1][j + 1] = true;
-            result->grid[4][4] = true;
+            i = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
+            j = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
+            o->grid[i][j] = o->grid[i + 1][j] = o->grid[i][j + 1] = o->grid[i + 1][j + 1] = true;
             break;
     }
 }
 
 void ObstacleGenerator::GenMedium(Obstacle *result) {
     int n = Random(3);
-    //int i;
+    int i;
     switch (n) {
         case 0:
-            //i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
-            //FillRow(result, 0);
-            //FillRow(result, 0);
-            result->grid[4][4] = true;
+            i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
+            FillRow(result, i + 1);
+            FillRow(result, i - 1);
             break;
         case 1:
-            //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
-            //FillCol(result, 0);
-            //FillCol(result, 0);
-            result->grid[4][4] = true;
+            i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
+            FillCol(result, i - 1);
+            FillCol(result, i + 1);
             break;
         default:
-            //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
-            //FillRow(result, i);
-            //FillCol(result, i);
-            result->grid[4][4] = true;
+            i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
+            FillRow(result, i);
+            FillCol(result, i);
             break;
 
     }
@@ -125,85 +118,67 @@ void ObstacleGenerator::GenMedium(Obstacle *result) {
 
 void ObstacleGenerator::GenIntermediate(Obstacle *result) {
     int n = Random(3);
-    //int i;
+    int i;
     switch (n) {
         case 0:
-            /*i = Random(0, OBS_GRID_SIZE - 2);
+            i = Random(0, OBS_GRID_SIZE - 2);
             FillRow(result, i);
             FillRow(result, i + 1);
-            FillRow(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            FillRow(result, i + 2);
             break;
         case 1:
-            /*i = Random(0, OBS_GRID_SIZE - 2); // i is the column of the bonus
+            i = Random(0, OBS_GRID_SIZE - 2); // i is the column of the bonus
             FillCol(result, i);
             FillCol(result, i + 1);
-            FillCol(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            FillCol(result, i + 2);
             break;
         default:
-            /*i = Random(1, OBS_GRID_SIZE - 2); // i is the column of the bonus
+            i = Random(1, OBS_GRID_SIZE - 2); // i is the column of the bonus
             FillCol(result, i - 1);
             FillCol(result, i + 1);
-            FillCol(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            FillCol(result, i + 2);
             break;
     }
 }
 
 void ObstacleGenerator::GenHard(Obstacle *result) {
     int n = Random(4);
-    //int i;
-    //int j;
+    int i;
+    int j;
     switch (n) {
         case 0:
-            /*i = Random(0, OBS_GRID_SIZE - 3);
+            i = Random(0, OBS_GRID_SIZE - 3);
             FillRow(result, i);
             FillRow(result, i + 1);
             FillRow(result, i + 2);
             FillRow(result, i + 3);
-            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;
             break;
         case 1:
-            /*i = Random(0, OBS_GRID_SIZE - 3);
+            i = Random(0, OBS_GRID_SIZE - 3);
             FillCol(result, i);
             FillCol(result, i + 1);
             FillCol(result, i + 2);
             FillCol(result, i + 3);
-            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;
             break;
         case 2:
-            /*i = Random(0, OBS_GRID_SIZE);
+            i = Random(0, OBS_GRID_SIZE);
             for (j = 0; j < OBS_GRID_SIZE; j++) {
                 if (i != j) {
                     FillCol(result, i);
                 }
             }
-            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;
             break;
         default:
-            /*i = Random(0, OBS_GRID_SIZE);
+            i = Random(0, OBS_GRID_SIZE);
             for (j = 0; j < OBS_GRID_SIZE; j++) {
                 if (i != j) {
                     FillRow(result, i);
                 }
             }
-            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;
             break;
     }
 }

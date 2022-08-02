@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-
-
-
+#include "anim.hpp"
+#include "dialog_scene.hpp"
+#include "play_scene.hpp"
 #include "welcome_scene.hpp"
-
+#include "jni_util.hpp"
 
 #include "blurb.inl"
 #include "strings.inl"
@@ -27,12 +27,9 @@
 
 // from samples/common/include
 #include "Versions.h"
-#include "play_scene.hpp"
-#include "scene_manager.hpp"
 
 #include <string>
 #include <android/window.h>
-#include <sstream>
 
 #define TITLE_POS center, 0.15f
 #define TITLE_FONT_SCALE 1.0f
@@ -92,11 +89,11 @@ WelcomeScene::~WelcomeScene() {
 }
 
 void WelcomeScene::RenderBackground() {
-    //RenderBackgroundAnimation(mShapeRenderer);
+    RenderBackgroundAnimation(mShapeRenderer);
 }
 
 static std::string sAboutStartText;
-/*
+
 void WelcomeScene::InitAboutText(JNIEnv* env, jobject context) {
     std::stringstream aboutStream;
     aboutStream << BLURB_ABOUT;
@@ -108,7 +105,6 @@ void WelcomeScene::InitAboutText(JNIEnv* env, jobject context) {
     aboutStream << "\nDevice OS Version: " << android_get_device_api_level();
     sAboutStartText = aboutStream.str();
 }
- */
 
 std::string WelcomeScene::AboutMessage() {
     std::stringstream aboutStream;
@@ -144,14 +140,14 @@ void WelcomeScene::OnButtonClicked(int id) {
         //js->env->CallVoidMethod(js->clazz, mid);
 
 
-       mgr->RequestNewScene(new PlayScene());
+        mgr->RequestNewScene(new PlayScene());
     } else if (id == mStoryButtonId) {
-        //mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
-                //DialogScene::ACTION_RETURN));
+        mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
+                DialogScene::ACTION_RETURN));
     } else if (id == mAboutButtonId) {
         std::string aboutText = AboutMessage();
-        //mgr->RequestNewScene((new DialogScene())->SetText(aboutText.c_str())->SetSingleButton(S_OK,
-                //DialogScene::ACTION_RETURN));
+        mgr->RequestNewScene((new DialogScene())->SetText(aboutText.c_str())->SetSingleButton(S_OK,
+                DialogScene::ACTION_RETURN));
     } else if (id == mNameEdit->GetId()) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
         // NB: the UI is resized when the IME is shown and OnCreateWidgets is called again.
@@ -170,7 +166,7 @@ void WelcomeScene::OnButtonClicked(int id) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
         GameActivity_finish(activity);
     } else if (id == mMemoryButtonId) {
-        //NativeEngine::GetInstance()->GetMemoryConsumer()->SetActive(true);
+        NativeEngine::GetInstance()->GetMemoryConsumer()->SetActive(true);
     }
 }
 

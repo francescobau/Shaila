@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef agdktunnel_engine_hpp
-#define agdktunnel_engine_hpp
+#ifndef agdktunnel_jniutil_hpp
+#define agdktunnel_jniutil_hpp
 
-// These are the include files that comprise the "engine" part of the game -- that is,
-// the parts of it that are not game-specific.
-#include "common.hpp"
-#include "indexbuf.hpp"
-#include "joystick-support.hpp"
-#include "native_engine.hpp"
-#include "our_key_codes.hpp"
-#include "scene.hpp"
-#include "scene_manager.hpp"
-#include "shader.hpp"
-#include "simplegeom.hpp"
-#include "texture.hpp"
-#include "vertexbuf.hpp"
+struct JniSetup {
+    jclass clazz; // activity class
+    jobject thiz; // activity object
+    JNIEnv *env;  // jni env
+};
+
+// Does JNI setup (if needed) and returns a struct with convenience objects.
+struct JniSetup *GetJNISetup();
 
 #endif

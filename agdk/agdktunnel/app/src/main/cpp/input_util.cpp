@@ -15,7 +15,7 @@
  */
 
 #include "input_util.hpp"
-
+#include "joystick-support.hpp"
 #include "our_key_codes.hpp"
 #include "util.hpp"
 

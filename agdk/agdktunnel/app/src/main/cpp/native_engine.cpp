@@ -16,7 +16,7 @@
 
 #include "common.hpp"
 #include "input_util.hpp"
-
+#include "joystick-support.hpp"
 #include "scene_manager.hpp"
 #include "loader_scene.hpp"
 #include "native_engine.hpp"
@@ -116,15 +116,15 @@ NativeEngine::NativeEngine(struct android_app *app) {
 
     // Initialize the memory consumer, used to exercise the
     // Memory Advice library. Off by default.
-    //mMemoryConsumer = new MemoryConsumer(false);
+    mMemoryConsumer = new MemoryConsumer(false);
 
     ALOGI("Calling SwappyGL_init");
     SwappyGL_init(GetJniEnv(), mApp->activity->javaGameActivity);
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
 
-    //mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
+    mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
 
-    //WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
+    WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
 
     // This is needed to allow controller events through to us.
     // By default, only touch-screen events are passed through, to match the
@@ -147,7 +147,7 @@ NativeEngine *NativeEngine::GetInstance() {
 
 NativeEngine::~NativeEngine() {
     VLOGD("NativeEngine: destructor running");
-    //delete mTuningManager;
+    delete mTuningManager;
     Paddleboat_setControllerStatusCallback(NULL, NULL);
     Paddleboat_destroy(GetJniEnv());
     SwappyGL_destroy();
@@ -243,7 +243,7 @@ void NativeEngine::GameLoop() {
             }
         }
 
-        //mMemoryConsumer->Update();
+        mMemoryConsumer->Update();
         mGameAssetManager->UpdateGameAssetManager();
         Paddleboat_update(GetJniEnv());
         HandleGameActivityInput();
@@ -757,7 +757,7 @@ void NativeEngine::DoFrame() {
     // if this is the first frame, install the welcome scene
     if (mIsFirstFrame) {
         mIsFirstFrame = false;
-        mgr->RequestNewScene(new WelcomeScene());
+        mgr->RequestNewScene(new LoaderScene());
     }
 
     // render!

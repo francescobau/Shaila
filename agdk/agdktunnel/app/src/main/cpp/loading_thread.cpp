@@ -61,12 +61,12 @@ void LoadingThread::LaunchThread() {
 }
 
 void LoadingThread::TerminateThread() REQUIRES(mThreadMutex) {
-        {
-                std::lock_guard<std::mutex> workLock(mWorkMutex);
+    {
+        std::lock_guard<std::mutex> workLock(mWorkMutex);
         mIsActive = false;
         mWorkCondition.notify_all();
-        }
-        mThread.join();
+    }
+    mThread.join();
 }
 
 void LoadingThread::ThreadMain() {
@@ -77,8 +77,8 @@ void LoadingThread::ThreadMain() {
         mWorkCondition.wait(
                 mWorkMutex,
                 [this]() REQUIRES(mWorkMutex) {
-            return !mWorkQueue.empty() || !mIsActive;
-        });
+                    return !mWorkQueue.empty() || !mIsActive;
+                });
         if (!mWorkQueue.empty()) {
             LoadingJob *loadingJob = mWorkQueue.front();
             mWorkQueue.pop();
