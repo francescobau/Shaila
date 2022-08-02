@@ -70,14 +70,12 @@ add_library(game SHARED
      android_main.cpp
      anim.cpp
      ascii_to_geom.cpp
-     dialog_scene.cpp
      game_activity_included.cpp
      game_asset_manager.cpp
      game_asset_manifest.cpp
      game_text_input_included.cpp
      indexbuf.cpp
      input_util.cpp
-     jni_util.cpp
      loader_scene.cpp
      loading_thread.cpp
      memory_consumer.cpp
