@@ -58,14 +58,14 @@ void ObstacleGenerator::FillRow(Obstacle *result, int row) {
     //for (int i = 0; i < OBS_GRID_SIZE; ++i) {
     //    result->grid[][row] = true;
     //}
-    result->grid[4][4] = true;
+    result->grid[0][4] = true;
 }
 
 void ObstacleGenerator::FillCol(Obstacle *result, int col) {
     //for (int i = 0; i < OBS_GRID_SIZE; ++i) {
     //    result->grid[col][i] = true;
     //}
-    result->grid[4][4] = true;
+    result->grid[0][4] = true;
 }
 
 void ObstacleGenerator::GenEasy(Obstacle *result) {
@@ -76,7 +76,7 @@ void ObstacleGenerator::GenEasy(Obstacle *result) {
         case 0:
             //i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
             //FillRow(result, i + (Random(2) ? 1 : -1)); // horizontal bar next to i
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
             break;
         case 1:
             //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
@@ -92,7 +92,7 @@ void ObstacleGenerator::GenEasy(Obstacle *result) {
             //i = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
             //j = Random(0, OBS_GRID_SIZE - 2); // i is the row of the bonus
             //o->grid[i][j] = o->grid[i + 1][j] = o->grid[i][j + 1] = o->grid[i + 1][j + 1] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
             break;
     }
 }
@@ -105,19 +105,19 @@ void ObstacleGenerator::GenMedium(Obstacle *result) {
             //i = Random(1, OBS_GRID_SIZE - 1); // i is the row of the bonus
             //FillRow(result, 0);
             //FillRow(result, 0);
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
             break;
         case 1:
             //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
             //FillCol(result, 0);
             //FillCol(result, 0);
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
             break;
         default:
             //i = Random(1, OBS_GRID_SIZE - 1); // i is the column of the bonus
             //FillRow(result, i);
             //FillCol(result, i);
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
             break;
 
     }
@@ -132,24 +132,24 @@ void ObstacleGenerator::GenIntermediate(Obstacle *result) {
             FillRow(result, i);
             FillRow(result, i + 1);
             FillRow(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
         case 1:
             /*i = Random(0, OBS_GRID_SIZE - 2); // i is the column of the bonus
             FillCol(result, i);
             FillCol(result, i + 1);
             FillCol(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
         default:
             /*i = Random(1, OBS_GRID_SIZE - 2); // i is the column of the bonus
             FillCol(result, i - 1);
             FillCol(result, i + 1);
             FillCol(result, i + 2);*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
     }
 }
@@ -166,9 +166,9 @@ void ObstacleGenerator::GenHard(Obstacle *result) {
             FillRow(result, i + 2);
             FillRow(result, i + 3);
             result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
         case 1:
             /*i = Random(0, OBS_GRID_SIZE - 3);
@@ -177,9 +177,9 @@ void ObstacleGenerator::GenHard(Obstacle *result) {
             FillCol(result, i + 2);
             FillCol(result, i + 3);
             result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
         case 2:
             /*i = Random(0, OBS_GRID_SIZE);
@@ -189,9 +189,9 @@ void ObstacleGenerator::GenHard(Obstacle *result) {
                 }
             }
             result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
         default:
             /*i = Random(0, OBS_GRID_SIZE);
@@ -201,9 +201,9 @@ void ObstacleGenerator::GenHard(Obstacle *result) {
                 }
             }
             result->grid[Random(0, OBS_GRID_SIZE)][Random(0, OBS_GRID_SIZE)] = false;*/
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
-            result->grid[4][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
+            result->grid[0][4] = true;
             break;
     }
 }

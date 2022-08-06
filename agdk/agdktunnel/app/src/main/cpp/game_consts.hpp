@@ -27,7 +27,7 @@
 #define TUNNEL_HALF_H 10.0f
 
 // length of each tunnel section
-#define TUNNEL_SECTION_LENGTH 100.0f
+#define TUNNEL_SECTION_LENGTH 50.0f
 
 // number of tunnel sections to render ahead
 #define RENDER_TUNNEL_SECTION_COUNT 4
@@ -45,7 +45,7 @@
 #define OBS_BONUS_SIZE (0.5f * OBS_CELL_SIZE)
 
 // at what distance (in tunnel sections) from the start position do obstacles start to appear?
-#define OBS_START_SECTION 1
+#define OBS_START_SECTION 2
 
 // once a tunnel section is this far behind the player, delete it
 #define SHIFT_THRESH 20.0f
@@ -54,7 +54,7 @@
 #define MAX_DELTA_T 0.05f
 
 // player's speed
-#define PLAYER_SPEED 40.0f
+#define PLAYER_SPEED 20.0f
 
 // how much the player's speed increases when we go up one difficulty level
 #define PLAYER_SPEED_INC_PER_LEVEL 10.0f
@@ -76,7 +76,7 @@
 #define JOYSTICK_CONTROL_SENSIVITY 20.0f
 
 // how many points equal a raise in difficulty level?
-#define SCORE_PER_LEVEL 500
+#define SCORE_PER_LEVEL 200
 
 // settings for rendering the score to the screen
 #define SCORE_POS_X 0.15f
@@ -160,6 +160,6 @@
 #define SAVE_FILE_NAME "tunnel.dat"
 
 // checkpoint (save progress) every how many levels?
-#define LEVELS_PER_CHECKPOINT 4
+#define LEVELS_PER_CHECKPOINT 2
 
 #endif

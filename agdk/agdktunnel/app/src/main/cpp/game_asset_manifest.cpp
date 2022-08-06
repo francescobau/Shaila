@@ -26,10 +26,8 @@ namespace {
      * A real world project might generate a manifest file as part of the asset pipeline.
      */
 
-    const char *InstallFileList[] = {"textures/wall1.tex", "textures/wall2.tex"};
-    const char *OnDemandFileList[] = {"textures/wall3.tex", "textures/wall4.tex",
-                                      "textures/wall5.tex", "textures/wall6.tex",
-                                      "textures/wall7.tex", "textures/wall8.tex"};
+    const char *InstallFileList[] = {"textures/texture1.ktx", "textures/texture2.ktx"};
+    const char *OnDemandFileList[] = {"textures/texture3.ktx"};
 
     const GameAssetManifest::AssetPackDefinition AssetPacks[] = {
             {

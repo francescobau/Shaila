@@ -29,7 +29,7 @@
 #include "Versions.h"
 #include "play_scene.hpp"
 #include "scene_manager.hpp"
-
+#include "loader_scene.hpp"
 #include <string>
 #include <android/window.h>
 #include <sstream>
@@ -133,18 +133,8 @@ void WelcomeScene::OnButtonClicked(int id) {
     SceneManager *mgr = SceneManager::GetInstance();
 
     if (id == mPlayButtonId) {
-        //Background call from Java
 
-        //JniSetup *js = GetJNISetup();
-        //jmethodID mid = js->env->GetMethodID(js->clazz, "change", "()V");
-        //js->env->CallVoidMethod(js->clazz, mid);
-        //mid = js->env->GetMethodID(js->clazz, "onRestart", "()");
-        //js->env->CallVoidMethod(js->clazz, mid);
-        //mid = js->env->GetMethodID(js->clazz, "setBackground", "()V");
-        //js->env->CallVoidMethod(js->clazz, mid);
-
-
-       mgr->RequestNewScene(new PlayScene());
+       mgr->RequestNewScene(new LoaderScene());
     } else if (id == mStoryButtonId) {
         //mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 //DialogScene::ACTION_RETURN));

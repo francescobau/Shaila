@@ -24,6 +24,7 @@
 #include "shape_renderer.hpp"
 #include "text_renderer.hpp"
 #include "util.hpp"
+#include "ui_scene.hpp"
 
 class OurShader;
 
@@ -196,7 +197,17 @@ protected:
     // what was the section number of the last obstacle with which the player crashed?
     int mLastCrashSection;
 
-    int pointerDownTimer;    //timer to keep the jump
+    //timer to keep the jump
+    int pointerDownTimer;
+
+    //height of the jump
+    float jumpHeight;
+
+    //speed of the jump
+    float jumpSpeed;
+
+    //time of the jump
+    int halfJumpTime;
 
     // last subsection were an ambient sound was emitted
     int mLastAmbientBeepEmitted;
@@ -206,6 +217,10 @@ protected:
 
     // pending to show a "checkpoint saved" sign?
     bool mCheckpointSignPending;
+
+    //player representation
+    UiWidget* player;
+    glm::vec2 playerIconPos;
 
     // get current score
     int GetScore() {
@@ -294,6 +309,9 @@ protected:
 
     // update projection matrix
     void UpdateProjectionMatrix();
+
+    //create new player image
+    UiWidget* NewPlayer();
 };
 
 #endif

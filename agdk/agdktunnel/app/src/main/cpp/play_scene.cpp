@@ -22,7 +22,7 @@
 #include "play_scene.hpp"
 #include "texture_manager.hpp"
 #include "util.hpp"
-
+#include "ui_scene.hpp"
 
 #include "data/ascii_art.inl"
 #include "data/cube_geom.inl"
@@ -67,8 +67,10 @@ PlayScene::PlayScene() : Scene() {
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
-    mPlayerPos = glm::vec3 (0.0f, 0.0f, 0.0f); // center
+    mPlayerPos = glm::vec3 (-10.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // right
+    player = NewPlayer();
+    playerIconPos = glm::vec2(0.38f, 0.35f);
 
     mDifficulty = 0;
     mUseCloudSave = false;
@@ -77,6 +79,10 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
+    jumpSpeed = 0;
+    halfJumpTime = 30;
+    jumpHeight = 2.0f;
+
     mObstacleCount = 0;
     mFirstObstacle = 0;
     mFirstSection = 0;
@@ -248,6 +254,7 @@ void PlayScene::OnStartGraphics() {
     mOurShader->Compile();
     mTrivialShader = new TrivialShader();
     mTrivialShader->Compile();
+    player->StartGraphics();
 
     // build projection matrix
     UpdateProjectionMatrix();
@@ -268,9 +275,9 @@ void PlayScene::OnStartGraphics() {
     TextureManager *textureManager = NativeEngine::GetInstance()->GetTextureManager();
     char textureName[32];
     for (int wallIndex = 0; wallIndex < MAX_WALL_TEXTURES; ++wallIndex) {
-        snprintf(textureName, 32, "textures/wall%d.ktx2", wallIndex + 1);
-        uint64_t textureReference = textureManager->GetTextureReference(
-                textureName);
+        snprintf(textureName, 32, "textures/texture%d.ktx", wallIndex + 1);
+        uint64_t textureReference = textureManager->GetTextureReference(textureName);
+        textureManager->LoadTexture(textureName);
         if (textureReference != TextureManager::INVALID_TEXTURE_REF) {
             uint32_t mipCount = textureManager->GetTextureMipCount(textureName);
             mWallTextures[wallIndex] = new Texture(static_cast<GLuint>(textureReference), mipCount);
@@ -308,6 +315,7 @@ void PlayScene::OnKillGraphics() {
     }
     mActiveWallTextureCount = 0;
     CleanUp(&mLifeGeom);
+    player->KillGraphics();
 }
 
 void PlayScene::DoFrame() {
@@ -321,7 +329,9 @@ void PlayScene::DoFrame() {
 
     // rotate the view matrix according to current roll angle
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
-    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 10.0f, mPlayerPos.y + 10.0f, 2.0f);
+
+    //camera posizionata in modo da vedere solo un lato del tunnel
+    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
 
     // set up view matrix according to player's ship position and direction
     mViewMat = glm::lookAt(cameraPos, cameraPos + mPlayerDir, upVec);
@@ -331,6 +341,9 @@ void PlayScene::DoFrame() {
 
     // render obstacles
     RenderObstacles();
+
+    //render player icon
+    player->Render(mTrivialShader, mTextRenderer, mShapeRenderer, UiWidget::FOCUS_NOT_APPLICABLE, 0.0f);
 
     if (mMenu) {
         RenderMenu();
@@ -370,6 +383,7 @@ void PlayScene::DoFrame() {
     float targetSpeed = PLAYER_SPEED + PLAYER_SPEED_INC_PER_LEVEL * mDifficulty;
     float accel = mPlayerSpeed >= 0.0f ? PLAYER_ACCELERATION_POSITIVE_SPEED :
                   PLAYER_ACCELERATION_NEGATIVE_SPEED;
+
     if (mLives <= 0) {
         targetSpeed = 0.0f;
     }
@@ -384,25 +398,34 @@ void PlayScene::DoFrame() {
     // move player
     if (mLives > 0) {
 
-
+        //implemented jump movement and deleted joystick usability
         if (mSteering == STEERING_TOUCH) {
             // touch steering
             //mPlayerPos.z += 1/15.0; //jetpack joyride style
+
             if(!pointerDownTimer){
-                mSteering = STEERING_NONE;  //jump finished
+                //jump finished
+                mSteering = STEERING_NONE;
+                jumpSpeed = jumpHeight * (mDifficulty+1);
+                halfJumpTime = 30/(mDifficulty+1);
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
-                if(pointerDownTimer > 30)
-                    mPlayerPos.z += 1.0/15.0; //first half of action, jump of dim 2
-                else
-                    mPlayerPos.z -= 1.0/15.0; //second half of action, falling
+
+                if(pointerDownTimer > halfJumpTime) {
+                    //first half of action, jump of dim 2
+                    mPlayerPos.z += jumpSpeed / 30.0;
+                    playerIconPos.y += jumpSpeed / 300.0;
+                    player->SetCenter(playerIconPos.x, playerIconPos.y);
+                }
+                else {
+                    //second half of action, falling
+                    mPlayerPos.z -= jumpSpeed / 30.0;
+                    playerIconPos.y -= jumpSpeed / 300.0;
+                    player->SetCenter(playerIconPos.x, playerIconPos.y);
+                }
                 pointerDownTimer--;
             }
-        } else if (mSteering == STEERING_JOY) {
-            // joystick steering
-            //mPlayerPos.x += deltaT * steerX;
-            //mPlayerPos.z += deltaT * steerZ;
-        } //else mPlayerPos.z -= 1/15.0; //jetpack joyride style
+        }  //else mPlayerPos.z -= 1/15.0; //jetpack joyride style
     }
     mPlayerPos.y += deltaT * mPlayerSpeed;  // run
 
@@ -580,6 +603,8 @@ void PlayScene::UpdateMenuSelFromTouch(float x, float y) {
     mMenuSel = Clamp(item, 0, mMenuItemCount - 1);
 }
 
+// Converted OnPointerDown and OnPointerUp to sort of clickListener
+// The player is now jumping
 void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords) {
     float x = coords->x, y = coords->y;
     if (mMenu) {
@@ -593,12 +618,13 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         mPointerAnchorY = y;
         //mPlayerPos.z = mPlayerPos.z + 1;
 
-        pointerDownTimer = 60;
+        pointerDownTimer = 60/(mDifficulty+1);
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
     }
 }
+
 
 void PlayScene::OnPointerUp(int pointerId, const struct PointerCoords *coords) {
     if (mMenu && mMenuTouchActive) {
@@ -753,8 +779,9 @@ void PlayScene::DetectCollisions(float previousY) {
         }
 
         // update difficulty level, if applicable
+        //Max level = 3, mDifficulty = 2
         int score = GetScore();
-        if (mDifficulty < score / SCORE_PER_LEVEL) {
+        if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < 2) {
             mDifficulty = score / SCORE_PER_LEVEL;
             ShowLevelSign();
             mObstacleGen.SetDifficulty(mDifficulty);
@@ -870,7 +897,11 @@ void PlayScene::HandleMenu(int menuItem) {
             break;
         case MENUITEM_RESUME:
             // resume from saved level
-            mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+            //mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+            if(mSavedCheckpoint >= 2)
+                mDifficulty = 2;
+            else
+                mDifficulty = 0;
             SetScore(SCORE_PER_LEVEL * mDifficulty);
             mObstacleGen.SetDifficulty(mDifficulty);
             ShowLevelSign();
@@ -906,4 +937,17 @@ void PlayScene::UpdateProjectionMatrix() {
     SceneManager *mgr = SceneManager::GetInstance();
     mProjMat = glm::perspective(RENDER_FOV, mgr->GetScreenAspect(), RENDER_NEAR_CLIP,
                                 RENDER_FAR_CLIP);
+}
+
+//new method for player representation
+UiWidget* PlayScene::NewPlayer() {
+    UiWidget* widget = new UiWidget(0);
+    widget->SetCenter(0.38f, 0.35f);
+    widget->SetBackColor(1.0f, 0.4f, 0.6f);
+    widget->SetIsButton(false);
+    widget->SetSize(0.1f, 0.1f);
+    widget->SetText(" ");
+    //widget->SetTextColor(1.0f, 0.4f, 0.6f);
+    widget->SetHasBorder(true);
+    return widget;
 }

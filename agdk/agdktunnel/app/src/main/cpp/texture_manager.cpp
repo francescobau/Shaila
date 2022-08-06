@@ -38,6 +38,7 @@ static const uint32_t ETC2_BitsPerPixel[] = {
         8  // GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC
 };
 #endif
+
 // ASTC GL internalformat values
 static const GLenum COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0;
 static const GLenum COMPRESSED_RGBA_ASTC_5x4_KHR = 0x93B1;
@@ -341,8 +342,7 @@ uint64_t TextureManager::GetTextureReference(const char *textureName) {
 }
 
 TextureManager::TextureReference TextureManager::FindReferenceForName(const char *textureName) {
-    for (std::vector<TextureReference>::iterator iter = mTextures.begin();
-         iter != mTextures.end(); ++iter) {
+    for (std::vector<TextureReference>::iterator iter = mTextures.begin(); iter != mTextures.end(); ++iter) {
         if (strcmp(textureName, iter->mTextureName) == 0) {
             return *iter;
         }
