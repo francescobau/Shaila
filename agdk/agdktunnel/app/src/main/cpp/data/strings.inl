@@ -19,7 +19,7 @@
 
 #define S_LOADING "Loading"
 
-#define S_HOWTO_WITHOUT_JOY "Drag to steer"
+#define S_HOWTO_WITHOUT_JOY "Press to jump"
 
 #define S_GOT_BONUS "+ 50"
 #define S_GAME_OVER "Game Over"
@@ -31,7 +31,7 @@
 #define S_START_OVER "Start Over"
 #define S_RESUME "Start from checkpoint"
 
-#define S_TITLE "AGDKTunnel"
+#define S_TITLE "Game"
 #define S_PLAY "Play!"
 #define S_NAME_EDIT "Edit your name"
 

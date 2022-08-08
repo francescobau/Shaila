@@ -30,14 +30,15 @@
 #define XR TUNNEL_HALF_W
 #define YN (TUNNEL_SECTION_LENGTH * -0.5f)
 #define YF (TUNNEL_SECTION_LENGTH * 0.5f)
-#define TCOLOR_M 0.10f,0.10f,0.10f,1.0f
-#define TCOLOR_D 0.07f,0.07f,0.07f,1.0f
+//Tunnel colors
+#define TCOLOR_M 0.0f,0.0f,1.0f,0.0f//0.10f,0.10f,0.10f,1.0f
+#define TCOLOR_D 1.0f,1.0f,1.0f,1.0f//0.07f,0.07f,0.07f,1.0f
 
 // max texture coord along X and Z axis (i.e. repetitions)
-#define REPN 10.0f
+#define REPN -0.7f //1.0f
 
 // max texture coord along Y axis (i.e. repetitions)
-#define REPF (REPN * TUNNEL_SECTION_LENGTH / (2 * TUNNEL_HALF_W))
+#define REPF 1.0f //(REPN * TUNNEL_SECTION_LENGTH / (2 * TUNNEL_HALF_W))
 
 // note: the color data is temporary (will be replaced with texture once texture is implemented)
 static GLfloat TUNNEL_GEOM[] = {

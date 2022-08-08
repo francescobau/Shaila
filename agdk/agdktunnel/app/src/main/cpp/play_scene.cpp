@@ -79,9 +79,9 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
-    jumpSpeed = 0;
     halfJumpTime = 30;
     jumpHeight = 2.0f;
+    jumpSpeed = jumpHeight * (mDifficulty+1);
 
     mObstacleCount = 0;
     mFirstObstacle = 0;
@@ -947,7 +947,7 @@ UiWidget* PlayScene::NewPlayer() {
     widget->SetIsButton(false);
     widget->SetSize(0.1f, 0.1f);
     widget->SetText(" ");
-    //widget->SetTextColor(1.0f, 0.4f, 0.6f);
+    widget->SetTextColor(0.7f, 0.3f, 0.9f);
     widget->SetHasBorder(true);
     return widget;
 }

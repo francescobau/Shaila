@@ -27,10 +27,10 @@
 #define TUNNEL_HALF_H 10.0f
 
 // length of each tunnel section
-#define TUNNEL_SECTION_LENGTH 50.0f
+#define TUNNEL_SECTION_LENGTH 60.0f
 
 // number of tunnel sections to render ahead
-#define RENDER_TUNNEL_SECTION_COUNT 4
+#define RENDER_TUNNEL_SECTION_COUNT 3
 
 // An obstacle is a grid of boxes. This indicates how many boxes by how many boxes this grid is.
 #define OBS_GRID_SIZE 9
