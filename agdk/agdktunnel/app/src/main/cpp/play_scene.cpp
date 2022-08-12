@@ -331,7 +331,8 @@ void PlayScene::DoFrame() {
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     //camera posizionata in modo da vedere solo un lato del tunnel
-    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
+    //glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
+    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 15.0f, mPlayerPos.y + 10.0f, 2.0f);
 
     // set up view matrix according to player's ship position and direction
     mViewMat = glm::lookAt(cameraPos, cameraPos + mPlayerDir, upVec);
