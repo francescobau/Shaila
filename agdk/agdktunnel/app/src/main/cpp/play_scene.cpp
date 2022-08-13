@@ -422,15 +422,17 @@ void PlayScene::DoFrame() {
 
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
+                    // TODO: capire a che serve mPlayerPos.z
                     mPlayerPos.z += jumpSpeed / 30.0;
                     playerIconPos.y += jumpSpeed / 300.0;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
                     //second half of action, falling
+                    // TODO: capire a che serve mPlayerPos.z
                     mPlayerPos.z -= jumpSpeed / 30.0;
                     // TODO: ripristinare playerIconPos.
-                    //  [FAIL. Aumentando il valore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
+                    //  [FAIL. Aumentando il denominatore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
                     playerIconPos.y -= jumpSpeed / 300.0;
                     //playerIconPos.y -= jumpSpeed / 3000.0;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
