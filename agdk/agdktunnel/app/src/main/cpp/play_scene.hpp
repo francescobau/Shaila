@@ -112,7 +112,10 @@ protected:
     // obstacle 0 is at section mFirstSection
     // obstacle 1 is at section mFirstSection + 1
     // and so on and so forth.
+    // TODO: Ripristinare MAX_OBS
+    //  [FAIL. Non fa niente.]
     static const int MAX_OBS = RENDER_TUNNEL_SECTION_COUNT * 2;
+    //static const int MAX_OBS = RENDER_TUNNEL_SECTION_COUNT * 4;
     int mFirstObstacle;
     int mObstacleCount;
     Obstacle mObstacleCircBuf[MAX_OBS];
@@ -199,6 +202,9 @@ protected:
 
     //timer to keep the jump
     int pointerDownTimer;
+
+    // TODO: Verificare il suo funzionamento
+    int storedPointerDownTimer;
 
     //height of the jump
     float jumpHeight;

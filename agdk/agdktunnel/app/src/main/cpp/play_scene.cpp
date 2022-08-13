@@ -79,9 +79,16 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
-    halfJumpTime = 30;
+    // TODO: storedPointerDownTimer e' temporaneo. Serve per memorizzare il timer quando sta sopra l'ostacolo.
+    storedPointerDownTimer = 0;
+    // TODO: Ripristinare halfJumpTime.
+    // Standardizzo il salto.
+    //halfJumpTime = 30;
+    halfJumpTime = 10;
     jumpHeight = 2.0f;
-    jumpSpeed = jumpHeight * (mDifficulty+1);
+    // TODO: Ripristinare jumpSpeed.
+    //jumpSpeed = jumpHeight * (mDifficulty+1);
+    jumpSpeed = jumpHeight * 3;
 
     mObstacleCount = 0;
     mFirstObstacle = 0;
@@ -331,8 +338,8 @@ void PlayScene::DoFrame() {
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     //camera posizionata in modo da vedere solo un lato del tunnel
-    //glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
-    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 15.0f, mPlayerPos.y + 10.0f, 2.0f);
+    //TODO: Regolare cameraPos
+    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
 
     // set up view matrix according to player's ship position and direction
     mViewMat = glm::lookAt(cameraPos, cameraPos + mPlayerDir, upVec);
@@ -407,8 +414,9 @@ void PlayScene::DoFrame() {
             if(!pointerDownTimer){
                 //jump finished
                 mSteering = STEERING_NONE;
-                jumpSpeed = jumpHeight * (mDifficulty+1);
-                halfJumpTime = 30/(mDifficulty+1);
+                // TODO: Ripristinare jumpSpeed e halfJumpTime.
+                //jumpSpeed = jumpHeight * (mDifficulty+1);
+                //halfJumpTime = 30/(mDifficulty+1);
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
 
@@ -421,7 +429,10 @@ void PlayScene::DoFrame() {
                 else {
                     //second half of action, falling
                     mPlayerPos.z -= jumpSpeed / 30.0;
+                    // TODO: ripristinare playerIconPos.
+                    //  [FAIL. Aumentando il valore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
                     playerIconPos.y -= jumpSpeed / 300.0;
+                    //playerIconPos.y -= jumpSpeed / 3000.0;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 pointerDownTimer--;
@@ -619,7 +630,10 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         mPointerAnchorY = y;
         //mPlayerPos.z = mPlayerPos.z + 1;
 
-        pointerDownTimer = 60/(mDifficulty+1);
+        // TODO: Ripristinare pointerDownTimer.
+        // Standardizzo pointerDownTimer.
+        //pointerDownTimer = 60/(mDifficulty+1);
+        pointerDownTimer = 60/3;
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
@@ -742,6 +756,13 @@ void PlayScene::DetectCollisions(float previousY) {
     float curY = mPlayerPos.y;
 
     if (!o || !(previousY < obsMin && curY >= obsMin)) {
+
+        // TODO: Aggiustare ripristino pointerDownTimer
+        if(storedPointerDownTimer){
+            pointerDownTimer = storedPointerDownTimer;
+            storedPointerDownTimer = 0;
+        }
+
         // no collision
         return;
     }
@@ -751,6 +772,24 @@ void PlayScene::DetectCollisions(float previousY) {
     int row = o->GetRowAt(mPlayerPos.z);
 
     if (o->grid[col][row]) {
+
+        // TODO: Regolare algoritmo ostacolo-piattaforma
+        //  [TEMP FAIL. Bisogna gestire meglio le coordinate, e stdout non funziona.]
+        // TODO: Coordinate di debug su file esterno.
+        // Collisione annullata se sta sopra l'ostacolo (traiettoria discendente).
+        //DEBUG.
+        fprintf(stdout, "\n[DEBUG]\n");
+        fprintf(stdout,"previousY = %f \ncurY = %f\n\n",previousY,curY);
+        fprintf(stdout,"playerIconPos.x = %f \nplayerIconPos.y = %f\n\n",playerIconPos.x,playerIconPos.y);
+        fprintf(stdout,"mPlayerPos.x = %f \nmPlayerPos.y = %f \nmPlayerPos.z = %f\n\n\n",mPlayerPos.x,mPlayerPos.y,mPlayerPos.z);
+        if(pointerDownTimer <= halfJumpTime){
+            // mantiene la posizione se tocca l'ostacolo da sopra.
+            playerIconPos.y = obsCenter;
+            player->SetCenter(playerIconPos.x,playerIconPos.y);
+            storedPointerDownTimer = pointerDownTimer;
+            pointerDownTimer = 0;
+        }
+
         // crashed against obstacle
         mLives--;
         if (mLives > 0) {

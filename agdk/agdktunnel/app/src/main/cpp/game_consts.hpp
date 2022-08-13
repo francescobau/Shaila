@@ -33,13 +33,23 @@
 #define RENDER_TUNNEL_SECTION_COUNT 3
 
 // An obstacle is a grid of boxes. This indicates how many boxes by how many boxes this grid is.
+// TODO: Ripristinare OBS_GRID_SIZE
+//  [FAIL. Ostacoli e bonus diventano più piccoli all'aumentare di questo valore.
+//  Inoltre, il tutto viene posizionato piu' in basso.]
 #define OBS_GRID_SIZE 9
+//#define OBS_GRID_SIZE 18
 
 // This is how wide each of the grid cells are
+// TODO: Ripristinare OBS_CELL_SIZE
+//  [FAIL. Ostacoli finiscono in alto.]
 #define OBS_CELL_SIZE ((2*TUNNEL_HALF_W)/(float)OBS_GRID_SIZE)
+//#define OBS_CELL_SIZE ((4*TUNNEL_HALF_W)/(float)OBS_GRID_SIZE)
 
 // size of each obstacle box
+// TODO: Ripristinare OBS_BOX_SIZE
+//  [FAIL. La dimensione aumenta... Lungo l'asse sbagliato.]
 #define OBS_BOX_SIZE (0.8f * OBS_CELL_SIZE)
+//#define OBS_BOX_SIZE (0.9f * OBS_CELL_SIZE)
 
 // size of bonus box
 #define OBS_BONUS_SIZE (0.5f * OBS_CELL_SIZE)
