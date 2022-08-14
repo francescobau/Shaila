@@ -321,6 +321,10 @@ protected:
 
     //create new player image
     UiWidget* NewPlayer();
+
+    // TODO: Controllare hasRestoredTimer()
+    //  [function che controlla se e' rimasto qualcosa in storedPointerDownTimer]
+    bool hasRestoredTimer();
 };
 
 #endif

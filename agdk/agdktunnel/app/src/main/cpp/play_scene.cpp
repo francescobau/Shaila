@@ -426,18 +426,12 @@ void PlayScene::DoFrame() {
 
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
-                    // TODO: capire a che serve mPlayerPos.z
                     mPlayerPos.z += jumpSpeed / 30.0;
                     playerIconPos.y += jumpSpeed / 300.0;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
-
-                    // TODO: Regolare la rilevazione delle collisioni dall'alto
-                    DetectCollisions(previousY);
-
                     //second half of action, falling
-                    // TODO: capire a che serve mPlayerPos.z
                     mPlayerPos.z -= jumpSpeed / 30.0;
                     // TODO: ripristinare playerIconPos.
                     //  [FAIL. Aumentando il denominatore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
@@ -644,11 +638,10 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         // Standardizzo pointerDownTimer.
         //pointerDownTimer = 60/(mDifficulty+1);
         //pointerDownTimer = 60/3;
-        if(storedPointerDownTimer){
-            pointerDownTimer = storedPointerDownTimer;
-            storedPointerDownTimer = 0;
-        }
-        else pointerDownTimer = 60/3;
+        if(hasRestoredTimer())
+            halfJumpTime += pointerDownTimer;
+        else halfJumpTime = 10;
+        pointerDownTimer += 60/3;
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
@@ -773,9 +766,7 @@ void PlayScene::DetectCollisions(float previousY) {
     if (!o || !(previousY < obsMin && curY >= obsMin)) {
 
         // TODO: Aggiustare ripristino pointerDownTimer
-        if(!isOnTop && storedPointerDownTimer){
-            pointerDownTimer = storedPointerDownTimer;
-            storedPointerDownTimer = 0;
+        if(!isOnTop && hasRestoredTimer()){
             mSteering = STEERING_TOUCH;
         }
         isOnTop = false;
@@ -786,7 +777,7 @@ void PlayScene::DetectCollisions(float previousY) {
 
     // TODO: controllare funzionamento del nuovo blocco else if.
     //  (si usa pointerDownTimer+1 perche' e' gia' decrementato.)
-    else if( pointerDownTimer && pointerDownTimer+1 < halfJumpTime){
+    else if( pointerDownTimer+1 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
             isOnTop = true;
             // mantiene la posizione se tocca l'ostacolo da sopra.
             mPlayerPos.z += jumpSpeed / 30.0;
@@ -794,10 +785,14 @@ void PlayScene::DetectCollisions(float previousY) {
             player->SetCenter(playerIconPos.x, playerIconPos.y);
             storedPointerDownTimer = pointerDownTimer+1;
             pointerDownTimer = 0;
+            mSteering = STEERING_NONE;
             // TODO: Rimuovere incremento mLives, usato per debug.
             mLives++;
         }
-        else isOnTop = false;
+        else{
+            isOnTop = false;
+            mSteering = STEERING_TOUCH;
+        }
 
     // what row/column is the player on?
     int col = o->GetColAt(mPlayerPos.x);
@@ -1020,4 +1015,14 @@ UiWidget* PlayScene::NewPlayer() {
     widget->SetTextColor(0.7f, 0.3f, 0.9f);
     widget->SetHasBorder(true);
     return widget;
+}
+
+// TODO: Controllare funzionamento nuova function
+bool PlayScene::hasRestoredTimer(){
+    if(storedPointerDownTimer > 0){
+        pointerDownTimer += storedPointerDownTimer;
+        storedPointerDownTimer = 0;
+        return true;
+    }
+    else return false;
 }
