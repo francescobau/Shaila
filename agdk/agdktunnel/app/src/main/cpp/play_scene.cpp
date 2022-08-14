@@ -643,7 +643,12 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         // TODO: Ripristinare pointerDownTimer.
         // Standardizzo pointerDownTimer.
         //pointerDownTimer = 60/(mDifficulty+1);
-        pointerDownTimer = 60/3;
+        //pointerDownTimer = 60/3;
+        if(storedPointerDownTimer){
+            pointerDownTimer = storedPointerDownTimer;
+            storedPointerDownTimer = 0;
+        }
+        else pointerDownTimer = 60/3;
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
