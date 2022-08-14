@@ -172,4 +172,14 @@
 // checkpoint (save progress) every how many levels?
 #define LEVELS_PER_CHECKPOINT 2
 
+// TODO: Nuove costanti per risolvere hardwiring
+// Timer di salto di default.
+#define DEFAULT_JUMP_TIME 20
+// Difficoltà massima
+#define MAX_DIFFICULTY 2
+// Variazione di altezza ad ogni frame
+#define HEIGHT_DELTA (jumpSpeed / 30.0)
+// Altezza del salto
+#define JUMP_HEIGHT 2.0f
+
 #endif

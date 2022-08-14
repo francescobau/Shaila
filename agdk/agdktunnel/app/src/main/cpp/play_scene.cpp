@@ -67,6 +67,7 @@ PlayScene::PlayScene() : Scene() {
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
+    // TODO: RISOLVERE HARDWIRING.
     mPlayerPos = glm::vec3 (-10.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // right
     player = NewPlayer();
@@ -88,11 +89,11 @@ PlayScene::PlayScene() : Scene() {
     // TODO: Ripristinare halfJumpTime.
     // Standardizzo il salto.
     //halfJumpTime = 30;
-    halfJumpTime = 10;
-    jumpHeight = 2.0f;
+    halfJumpTime = DEFAULT_JUMP_TIME / 2;
+    jumpHeight = JUMP_HEIGHT;
     // TODO: Ripristinare jumpSpeed.
     //jumpSpeed = jumpHeight * (mDifficulty+1);
-    jumpSpeed = jumpHeight * 3;
+    jumpSpeed = jumpHeight * (MAX_DIFFICULTY+1);
 
     mObstacleCount = 0;
     mFirstObstacle = 0;
@@ -426,17 +427,18 @@ void PlayScene::DoFrame() {
 
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
-                    mPlayerPos.z += jumpSpeed / 30.0;
-                    playerIconPos.y += jumpSpeed / 300.0;
+                    mPlayerPos.z += HEIGHT_DELTA;
+                    playerIconPos.y += HEIGHT_DELTA / 10;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
                     //second half of action, falling
-                    mPlayerPos.z -= jumpSpeed / 30.0;
+                    mPlayerPos.z -= HEIGHT_DELTA;
+                    //mPlayerPos.z -= jumpSpeed / 30.0;
                     // TODO: ripristinare playerIconPos.
                     //  [FAIL. Aumentando il denominatore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
-                    playerIconPos.y -= jumpSpeed / 300.0;
-                    //playerIconPos.y -= jumpSpeed / 3000.0;
+                    playerIconPos.y -= HEIGHT_DELTA / 10;
+                    //playerIconPos.y -= jumpSpeed / 300.0;
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 pointerDownTimer--;
@@ -640,8 +642,9 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         //pointerDownTimer = 60/3;
         if(hasRestoredTimer())
             halfJumpTime += pointerDownTimer;
-        else halfJumpTime = 10;
-        pointerDownTimer += 60/3;
+        else halfJumpTime = DEFAULT_JUMP_TIME / 2;
+        pointerDownTimer += DEFAULT_JUMP_TIME;
+
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
@@ -777,11 +780,11 @@ void PlayScene::DetectCollisions(float previousY) {
 
     // TODO: controllare funzionamento del nuovo blocco else if.
     //  (si usa pointerDownTimer+1 perche' e' gia' decrementato.)
-    else if( pointerDownTimer+1 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
+    else if( pointerDownTimer+2 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
             isOnTop = true;
             // mantiene la posizione se tocca l'ostacolo da sopra.
-            mPlayerPos.z += jumpSpeed / 30.0;
-            playerIconPos.y += jumpSpeed / 300.0;
+            mPlayerPos.z += HEIGHT_DELTA;
+            playerIconPos.y += HEIGHT_DELTA / 10;
             player->SetCenter(playerIconPos.x, playerIconPos.y);
             storedPointerDownTimer = pointerDownTimer+1;
             pointerDownTimer = 0;
@@ -808,9 +811,9 @@ void PlayScene::DetectCollisions(float previousY) {
         if (mLives > 0) {
 
             // TODO: Rimuovere questo blocco di debug.
-            //  (decremento immediato se il numero di vite e' troppo alto.)
-            if(mLives > 3){
-                mLives = 3;
+            //  (decremento doppio se il numero di vite e' troppo alto, e difficolta' massima.)
+            if(mLives > PLAYER_LIVES && mDifficulty == MAX_DIFFICULTY){
+                mLives-= ( (mLives-PLAYER_LIVES) / 2 );
                 ShowSign("CRITICAL HIT!", SIGN_DURATION);
             }
             else
@@ -832,21 +835,31 @@ void PlayScene::DetectCollisions(float previousY) {
 
 
         // TODO: Ripristinare else if
+        // Se la colonna e' quella del bonus, e tocca il bonus direttamente o stando sopra l'ostacolo,
+        // allora prende il bonus.
    // } else if (row == o->bonusRow && col == o->bonusCol) {
-    } else if (col == o->bonusCol && (isOnTop || row == o->bonusRow)) {
+    } else if ( col == o->bonusCol && (isOnTop || row == o->bonusRow) ) {
         ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
         o->DeleteBonus();
         AddScore(BONUS_POINTS);
         mBonusInARow++;
 
+        // TODO: Vita bonus? [DEBUG]
         if (mBonusInARow >= 10) {
             mBonusInARow = 0;
+
+            // TODO: Rimuovere blocco di debug.
+            mLives++;
+            ShowSign("+1 EXTRA LIFE",SIGN_DURATION_BONUS);
+
         }
 
         // update difficulty level, if applicable
         //Max level = 3, mDifficulty = 2
         int score = GetScore();
-        if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < 2) {
+        // TODO: Risolto hardwiring condizione mDifficulty.
+        //if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < 2) {
+        if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < MAX_DIFFICULTY) {
             mDifficulty = score / SCORE_PER_LEVEL;
             ShowLevelSign();
             mObstacleGen.SetDifficulty(mDifficulty);
@@ -963,8 +976,9 @@ void PlayScene::HandleMenu(int menuItem) {
         case MENUITEM_RESUME:
             // resume from saved level
             //mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
-            if(mSavedCheckpoint >= 2)
-                mDifficulty = 2;
+            // TODO: Risolto hardwiring MAX_DIFFICULTY
+            if(mSavedCheckpoint >= MAX_DIFFICULTY)
+                mDifficulty = MAX_DIFFICULTY;
             else
                 mDifficulty = 0;
             SetScore(SCORE_PER_LEVEL * mDifficulty);
