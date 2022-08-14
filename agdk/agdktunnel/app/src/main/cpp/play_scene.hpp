@@ -203,8 +203,11 @@ protected:
     //timer to keep the jump
     int pointerDownTimer;
 
-    // TODO: Verificare il suo funzionamento
+    // TODO: Verificare il funzionamento di storedPointerDownTimer
+    // Memorizza il timer quando sta sopra l'ostacolo.
     int storedPointerDownTimer;
+    // TODO: Verificare il funzionamento di isOnTop
+    bool isOnTop;
 
     //height of the jump
     float jumpHeight;

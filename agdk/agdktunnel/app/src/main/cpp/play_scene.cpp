@@ -79,8 +79,12 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
-    // TODO: storedPointerDownTimer e' temporaneo. Serve per memorizzare il timer quando sta sopra l'ostacolo.
+    // TODO: storedPointerDownTimer e' temporaneo.
+    //  Serve per memorizzare il timer quando sta sopra l'ostacolo.
     storedPointerDownTimer = 0;
+    // TODO: isOnTop e' temporaneo.
+    //  Serve come flag per dire che il giocatore si trova sopra l'ostacolo.
+    isOnTop = false;
     // TODO: Ripristinare halfJumpTime.
     // Standardizzo il salto.
     //halfJumpTime = 30;
@@ -428,6 +432,10 @@ void PlayScene::DoFrame() {
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
+
+                    // TODO: Regolare la rilevazione delle collisioni dall'alto
+                    DetectCollisions(previousY);
+
                     //second half of action, falling
                     // TODO: capire a che serve mPlayerPos.z
                     mPlayerPos.z -= jumpSpeed / 30.0;
@@ -760,41 +768,53 @@ void PlayScene::DetectCollisions(float previousY) {
     if (!o || !(previousY < obsMin && curY >= obsMin)) {
 
         // TODO: Aggiustare ripristino pointerDownTimer
-        if(storedPointerDownTimer){
+        if(!isOnTop && storedPointerDownTimer){
             pointerDownTimer = storedPointerDownTimer;
             storedPointerDownTimer = 0;
+            mSteering = STEERING_TOUCH;
         }
+        isOnTop = false;
 
         // no collision
         return;
     }
 
+    // TODO: controllare funzionamento del nuovo blocco else if.
+    //  (si usa pointerDownTimer+1 perche' e' gia' decrementato.)
+    else if( pointerDownTimer && pointerDownTimer+1 < halfJumpTime){
+            isOnTop = true;
+            // mantiene la posizione se tocca l'ostacolo da sopra.
+            mPlayerPos.z += jumpSpeed / 30.0;
+            playerIconPos.y += jumpSpeed / 300.0;
+            player->SetCenter(playerIconPos.x, playerIconPos.y);
+            storedPointerDownTimer = pointerDownTimer+1;
+            pointerDownTimer = 0;
+            // TODO: Rimuovere incremento mLives, usato per debug.
+            mLives++;
+        }
+        else isOnTop = false;
+
     // what row/column is the player on?
     int col = o->GetColAt(mPlayerPos.x);
     int row = o->GetRowAt(mPlayerPos.z);
 
-    if (o->grid[col][row]) {
-
-        // TODO: Regolare algoritmo ostacolo-piattaforma
-        //  [TEMP FAIL. Bisogna gestire meglio le coordinate, e stdout non funziona.]
-        // TODO: Coordinate di debug su file esterno.
-        // Collisione annullata se sta sopra l'ostacolo (traiettoria discendente).
-        //DEBUG.
-        fprintf(stdout, "\n[DEBUG]\n");
-        fprintf(stdout,"previousY = %f \ncurY = %f\n\n",previousY,curY);
-        fprintf(stdout,"playerIconPos.x = %f \nplayerIconPos.y = %f\n\n",playerIconPos.x,playerIconPos.y);
-        fprintf(stdout,"mPlayerPos.x = %f \nmPlayerPos.y = %f \nmPlayerPos.z = %f\n\n\n",mPlayerPos.x,mPlayerPos.y,mPlayerPos.z);
-        if(pointerDownTimer <= halfJumpTime){
-            // mantiene la posizione se tocca l'ostacolo da sopra.
-            playerIconPos.y = obsCenter;
-            player->SetCenter(playerIconPos.x,playerIconPos.y);
-            storedPointerDownTimer = pointerDownTimer;
-            pointerDownTimer = 0;
-        }
+    // TODO: Verifica funzionamento di isOnTop.
+    //if (o->grid[col][row]) {
+    if (o->grid[col][row] && !isOnTop) {
 
         // crashed against obstacle
         mLives--;
+
         if (mLives > 0) {
+
+            // TODO: Rimuovere questo blocco di debug.
+            //  (decremento immediato se il numero di vite e' troppo alto.)
+            if(mLives > 3){
+                mLives = 3;
+                ShowSign("CRITICAL HIT!", SIGN_DURATION);
+            }
+            else
+
             ShowSign(S_OUCH, SIGN_DURATION);
             SfxMan::GetInstance()->PlayTone(TONE_CRASHED);
         } else {
@@ -810,7 +830,10 @@ void PlayScene::DetectCollisions(float previousY) {
 
         mLastCrashSection = mFirstSection;
 
-    } else if (row == o->bonusRow && col == o->bonusCol) {
+
+        // TODO: Ripristinare else if
+   // } else if (row == o->bonusRow && col == o->bonusCol) {
+    } else if (col == o->bonusCol && (isOnTop || row == o->bonusRow)) {
         ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
         o->DeleteBonus();
         AddScore(BONUS_POINTS);
