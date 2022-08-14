@@ -325,6 +325,8 @@ protected:
     // TODO: Controllare hasRestoredTimer()
     //  [function che controlla se e' rimasto qualcosa in storedPointerDownTimer]
     bool hasRestoredTimer();
+
+    void getExtraLife();
 };
 
 #endif

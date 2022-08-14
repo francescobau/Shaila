@@ -790,7 +790,7 @@ void PlayScene::DetectCollisions(float previousY) {
             pointerDownTimer = 0;
             mSteering = STEERING_NONE;
             // TODO: Rimuovere incremento mLives, usato per debug.
-            mLives++;
+            getExtraLife();
         }
         else{
             isOnTop = false;
@@ -811,9 +811,9 @@ void PlayScene::DetectCollisions(float previousY) {
         if (mLives > 0) {
 
             // TODO: Rimuovere questo blocco di debug.
-            //  (decremento doppio se il numero di vite e' troppo alto, e difficolta' massima.)
-            if(mLives > PLAYER_LIVES && mDifficulty == MAX_DIFFICULTY){
-                mLives-= ( (mLives-PLAYER_LIVES) / 2 );
+            //  (malus danni maggiorati se il numero di vite e' troppo alto, e difficolta' e' massima.)
+            if(mLives >= PLAYER_LIVES+2 && mDifficulty == MAX_DIFFICULTY){
+                mLives -= ( (mLives-PLAYER_LIVES) / 2 );
                 ShowSign("CRITICAL HIT!", SIGN_DURATION);
             }
             else
@@ -848,9 +848,7 @@ void PlayScene::DetectCollisions(float previousY) {
         if (mBonusInARow >= 10) {
             mBonusInARow = 0;
 
-            // TODO: Rimuovere blocco di debug.
-            mLives++;
-            ShowSign("+1 EXTRA LIFE",SIGN_DURATION_BONUS);
+            getExtraLife();
 
         }
 
@@ -1039,4 +1037,11 @@ bool PlayScene::hasRestoredTimer(){
         return true;
     }
     else return false;
+}
+
+// TODO: Function di debug creata per dare 1 vita extra.
+void PlayScene::getExtraLife() {
+    // TODO: Rimuovere blocco di debug.
+    mLives++;
+    ShowSign("+1 EXTRA LIFE",SIGN_DURATION_BONUS);
 }
