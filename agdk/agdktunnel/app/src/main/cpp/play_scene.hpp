@@ -208,6 +208,8 @@ protected:
     int storedPointerDownTimer;
     // TODO: Verificare il funzionamento di isOnTop
     bool isOnTop;
+    // TODO: Verificare il funzionamento di extraLifeCounter
+    int extraLifeCounter;
 
     //height of the jump
     float jumpHeight;
@@ -242,7 +244,9 @@ protected:
         mEncryptedScore = mFakeScore ^ 0x600673;
     }
 
-    // add to current score
+    bool checkExtraLife();
+
+// add to current score
     void AddScore(int s) {
         SetScore(GetScore() + s);
     }
@@ -326,7 +330,9 @@ protected:
     //  [function che controlla se e' rimasto qualcosa in storedPointerDownTimer]
     bool hasRestoredTimer();
 
-    void getExtraLife();
+    // TODO: Controllare addScoreSign()
+    //  [function che controlla se e' stata appena aggiunta una vita extra o no.]
+    void addScoreSign(bool hasBonus);
 };
 
 #endif

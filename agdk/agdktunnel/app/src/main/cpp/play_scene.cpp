@@ -80,12 +80,14 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
-    // TODO: storedPointerDownTimer e' temporaneo.
+    // TODO: Controllare storedPointerDownTimer.
     //  Serve per memorizzare il timer quando sta sopra l'ostacolo.
     storedPointerDownTimer = 0;
-    // TODO: isOnTop e' temporaneo.
+    // TODO: Controllare isOnTop.
     //  Serve come flag per dire che il giocatore si trova sopra l'ostacolo.
     isOnTop = false;
+    // TODO: Controllare extraLifeCounter
+    extraLifeCounter = 0;
     // TODO: Ripristinare halfJumpTime.
     // Standardizzo il salto.
     //halfJumpTime = 30;
@@ -789,8 +791,6 @@ void PlayScene::DetectCollisions(float previousY) {
             storedPointerDownTimer = pointerDownTimer+1;
             pointerDownTimer = 0;
             mSteering = STEERING_NONE;
-            // TODO: Rimuovere incremento mLives, usato per debug.
-            getExtraLife();
         }
         else{
             isOnTop = false;
@@ -809,15 +809,6 @@ void PlayScene::DetectCollisions(float previousY) {
         mLives--;
 
         if (mLives > 0) {
-
-            // TODO: Rimuovere questo blocco di debug.
-            //  (malus danni maggiorati se il numero di vite e' troppo alto, e difficolta' e' massima.)
-            if(mLives >= PLAYER_LIVES+2 && mDifficulty == MAX_DIFFICULTY){
-                mLives -= ( (mLives-PLAYER_LIVES) / 2 );
-                ShowSign("CRITICAL HIT!", SIGN_DURATION);
-            }
-            else
-
             ShowSign(S_OUCH, SIGN_DURATION);
             SfxMan::GetInstance()->PlayTone(TONE_CRASHED);
         } else {
@@ -839,17 +830,17 @@ void PlayScene::DetectCollisions(float previousY) {
         // allora prende il bonus.
    // } else if (row == o->bonusRow && col == o->bonusCol) {
     } else if ( col == o->bonusCol && (isOnTop || row == o->bonusRow) ) {
-        ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
+        //ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
+
         o->DeleteBonus();
         AddScore(BONUS_POINTS);
         mBonusInARow++;
 
-        // TODO: Vita bonus? [DEBUG]
+        // TODO: Controlla funzionamento addScoreSign
+        addScoreSign(true);
+
         if (mBonusInARow >= 10) {
             mBonusInARow = 0;
-
-            getExtraLife();
-
         }
 
         // update difficulty level, if applicable
@@ -1039,9 +1030,25 @@ bool PlayScene::hasRestoredTimer(){
     else return false;
 }
 
-// TODO: Function di debug creata per dare 1 vita extra.
-void PlayScene::getExtraLife() {
-    // TODO: Rimuovere blocco di debug.
-    mLives++;
-    ShowSign("+1 EXTRA LIFE",SIGN_DURATION_BONUS);
+// TODO: Function che controlla che tipo di Sign bisogna dare
+//  quando il punteggio aumenta.
+void PlayScene::addScoreSign(bool hasBonus) {
+    if(checkExtraLife()){
+        ShowSign(S_EXTRA_LIFE,SIGN_DURATION);
+        // Aggiunto suono quando c'e' una vita extra.
+        SfxMan::GetInstance()->PlayTone(TONE_LEVEL_UP);
+        mLives++;
+        extraLifeCounter++;
+    }
+    else if(hasBonus){
+        ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
+        return;
+    }
+    // Se arriva a questo punto, significa che entrambe le condizioni sono soddisfatte.
+    ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS);
+}
+
+// TODO: Function che restituisce true quando si puo' aggiungere una vita, false altrimenti.
+bool PlayScene::checkExtraLife() {
+    return GetScore() >= (POINTS_FOR_EXTRA_LIFE * (extraLifeCounter+1));
 }

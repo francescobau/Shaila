@@ -181,5 +181,7 @@
 #define HEIGHT_DELTA (jumpSpeed / 30.0)
 // Altezza del salto
 #define JUMP_HEIGHT 2.0f
+// Punteggio necessario per ottenere bonus
+#define POINTS_FOR_EXTRA_LIFE 10000
 
 #endif
