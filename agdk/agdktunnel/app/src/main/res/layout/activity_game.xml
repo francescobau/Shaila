@@ -6,11 +6,4 @@
     android:layout_height="match_parent"
     tools:context=".AGDKTunnelActivity">
 
-    <VideoView
-        android:id="@+id/bg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@raw/spotifire_bg" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,8 +37,8 @@ void ObstacleGenerator::Generate(Obstacle *result) {
     result->Reset();
     result->style = 1 + Random(7);
 
-    int d = Clamp(mDifficulty, 0, 12);
-    int easyProb = PROB_TABLE[d * 4];
+    int d = Clamp(mDifficulty, 0, 2);
+    int easyProb = PROB_TABLE[0];
     int medProb = PROB_TABLE[d * 4 + 1];
     int intermediateProb = PROB_TABLE[d * 4 + 2];
     int roll = Random(100);

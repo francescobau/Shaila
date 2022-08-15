@@ -89,8 +89,9 @@ static int _synth(int frequency, int duration, float amplitude, int16_t *sample_
         float t = i / (float) _sampleRate;
         float v;
         if (frequency > 0) {
-            v = amplitude * sin(frequency * t * 2 * M_PI) +
-                (amplitude * 0.1f) * sin(frequency * 2 * t * 2 * M_PI);
+            v = amplitude * sin((frequency) * 2 * t * 2 * M_PI) +
+                (amplitude * 0.1f) * sin((frequency+0.5) * t * 2 * M_PI) +
+                (amplitude * 0.1f) * sin((frequency) * 3 * t * 2 * M_PI);
         } else {
             int r = rand();
             r = r > 0 ? r : -r;
