@@ -228,6 +228,9 @@ protected:
     //player representation
     UiWidget* player;
     glm::vec2 playerIconPos;
+    float screenWidth;
+    float screenHeight;
+    float screenAspect;
 
     // get current score
     int GetScore() {

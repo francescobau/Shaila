@@ -67,11 +67,14 @@ PlayScene::PlayScene() : Scene() {
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
-    // TODO: RISOLVERE HARDWIRING.
-    mPlayerPos = glm::vec3 (-10.0f, 0.0f, 0.0f); // center
+    screenWidth = SceneManager::GetInstance()->GetScreenWidth();
+    screenHeight = SceneManager::GetInstance()->GetScreenHeight();
+    screenAspect = SceneManager::GetInstance()->GetScreenAspect();
+    mPlayerPos = glm::vec3 (-3*screenWidth/10.0f, 0.0f, 0.0f); // player position, (0.0f, 0.0f, 0.0f) is center
+
     mPlayerDir = glm::vec3 (-1.0f, 0.0f, 0.0f); // right
     player = NewPlayer();
-    playerIconPos = glm::vec2(0.38f, 0.35f);
+    playerIconPos = glm::vec2(0.174f * screenAspect, 0.35f);
 
     mDifficulty = 0;
     mUseCloudSave = false;
@@ -340,8 +343,9 @@ void PlayScene::DoFrame() {
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     //camera posizionata in modo da vedere solo un lato del tunnel
-    //TODO: Regolare cameraPos per tutti i dispositivi
-    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
+
+    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x - 1.37f * mPlayerPos.x, mPlayerPos.y + (screenAspect*10 - screenHeight/100) - 1.4f, 1.82f*screenHeight/1000);
+
 
     // set up view matrix according to player's ship position and direction
     mViewMat = glm::lookAt(cameraPos, cameraPos + mPlayerDir, upVec);
@@ -416,6 +420,7 @@ void PlayScene::DoFrame() {
             if(!pointerDownTimer){
                 //jump finished
                 mSteering = STEERING_NONE;
+
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
 
@@ -473,10 +478,20 @@ void PlayScene::DoFrame() {
     }
 
     // produce the ambient sound
-    int soundPoint = (int) floor(mPlayerPos.y / (TUNNEL_SECTION_LENGTH / 3));
-    if (soundPoint % 3 != 0 && soundPoint > mLastAmbientBeepEmitted) {
+    int soundPoint = (int) floor(mPlayerPos.y / (TUNNEL_SECTION_LENGTH / 5));
+    if (soundPoint % 5 != 0 && soundPoint > mLastAmbientBeepEmitted) {
         mLastAmbientBeepEmitted = soundPoint;
-        SfxMan::GetInstance()->PlayTone(soundPoint % 2 ? TONE_AMBIENT_0 : TONE_AMBIENT_1);
+        switch(soundPoint % 3){
+            case 0:
+                SfxMan::GetInstance()->PlayTone(TONE_AMBIENT_1);
+                break;
+            case 1:
+                SfxMan::GetInstance()->PlayTone(TONE_AMBIENT_2);
+                break;
+            case 2:
+                SfxMan::GetInstance()->PlayTone(TONE_AMBIENT_7);
+                break;
+        }
     }
 }
 
@@ -993,7 +1008,7 @@ void PlayScene::UpdateProjectionMatrix() {
 //new method for player representation
 UiWidget* PlayScene::NewPlayer() {
     UiWidget* widget = new UiWidget(0);
-    widget->SetCenter(0.38f, 0.35f);
+    widget->SetCenter(0.174f * screenAspect, 0.35f);
     widget->SetBackColor(1.0f, 0.4f, 0.6f);
     widget->SetIsButton(false);
     widget->SetSize(0.1f, 0.1f);

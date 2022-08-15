@@ -81,16 +81,4 @@ public class AGDKTunnelActivity extends GameActivity {
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
     }
-
-    public void setBackground() {
-        setContentView(R.layout.activity_game);
-
-        //Background Loop
-        VideoView bg = findViewById(R.id.bg);
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.spotifire_bg);
-        bg.setVideoURI(uri);
-        bg.start();
-
-        bg.setOnPreparedListener(mepl -> mepl.setLooping(true));
-    }
 }
