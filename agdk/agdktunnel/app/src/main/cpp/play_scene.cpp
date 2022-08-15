@@ -80,21 +80,16 @@ PlayScene::PlayScene() : Scene() {
     mTunnelGeom = NULL;
 
     pointerDownTimer = 0;
-    // TODO: Controllare storedPointerDownTimer.
-    //  Serve per memorizzare il timer quando sta sopra l'ostacolo.
+
+    // it stores the timer when the player is on the obstacle.
     storedPointerDownTimer = 0;
-    // TODO: Controllare isOnTop.
-    //  Serve come flag per dire che il giocatore si trova sopra l'ostacolo.
+    // it determines if the player is on the obstacle or not.
     isOnTop = false;
-    // TODO: Controllare extraLifeCounter
+    // it counts how many times the player earned an extra life
     extraLifeCounter = 0;
-    // TODO: Ripristinare halfJumpTime.
-    // Standardizzo il salto.
-    //halfJumpTime = 30;
+
     halfJumpTime = DEFAULT_JUMP_TIME / 2;
     jumpHeight = JUMP_HEIGHT;
-    // TODO: Ripristinare jumpSpeed.
-    //jumpSpeed = jumpHeight * (mDifficulty+1);
     jumpSpeed = jumpHeight * (MAX_DIFFICULTY+1);
 
     mObstacleCount = 0;
@@ -345,7 +340,7 @@ void PlayScene::DoFrame() {
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     //camera posizionata in modo da vedere solo un lato del tunnel
-    //TODO: Regolare cameraPos
+    //TODO: Regolare cameraPos per tutti i dispositivi
     glm::vec3 cameraPos = glm::vec3(mPlayerPos.x + 13.0f, mPlayerPos.y + 10.0f, 2.0f);
 
     // set up view matrix according to player's ship position and direction
@@ -421,26 +416,23 @@ void PlayScene::DoFrame() {
             if(!pointerDownTimer){
                 //jump finished
                 mSteering = STEERING_NONE;
-                // TODO: Ripristinare jumpSpeed e halfJumpTime.
-                //jumpSpeed = jumpHeight * (mDifficulty+1);
-                //halfJumpTime = 30/(mDifficulty+1);
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
 
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
+
                     mPlayerPos.z += HEIGHT_DELTA;
                     playerIconPos.y += HEIGHT_DELTA / 10;
+
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
                     //second half of action, falling
+
                     mPlayerPos.z -= HEIGHT_DELTA;
-                    //mPlayerPos.z -= jumpSpeed / 30.0;
-                    // TODO: ripristinare playerIconPos.
-                    //  [FAIL. Aumentando il denominatore, il timer non e' piu' sufficiente per far ritornare l'icona alla posizione corretta.]
                     playerIconPos.y -= HEIGHT_DELTA / 10;
-                    //playerIconPos.y -= jumpSpeed / 300.0;
+
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 pointerDownTimer--;
@@ -638,11 +630,8 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         mPointerAnchorY = y;
         //mPlayerPos.z = mPlayerPos.z + 1;
 
-        // TODO: Ripristinare pointerDownTimer.
-        // Standardizzo pointerDownTimer.
-        //pointerDownTimer = 60/(mDifficulty+1);
-        //pointerDownTimer = 60/3;
-        if(hasRestoredTimer())
+        // manages timers, checking if the player is on the floor or not.
+        if(restoreTimer())
             halfJumpTime += pointerDownTimer;
         else halfJumpTime = DEFAULT_JUMP_TIME / 2;
         pointerDownTimer += DEFAULT_JUMP_TIME;
@@ -770,8 +759,8 @@ void PlayScene::DetectCollisions(float previousY) {
 
     if (!o || !(previousY < obsMin && curY >= obsMin)) {
 
-        // TODO: Aggiustare ripristino pointerDownTimer
-        if(!isOnTop && hasRestoredTimer()){
+        // if it's not on the obstacle anymore, the player is free to move.
+        if(!isOnTop && restoreTimer()){
             mSteering = STEERING_TOUCH;
         }
         isOnTop = false;
@@ -780,8 +769,7 @@ void PlayScene::DetectCollisions(float previousY) {
         return;
     }
 
-    // TODO: controllare funzionamento del nuovo blocco else if.
-    //  (si usa pointerDownTimer+1 perche' e' gia' decrementato.)
+    // corrects the player's position if it's at the top of the obstacle.
     else if( pointerDownTimer+2 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
             isOnTop = true;
             // mantiene la posizione se tocca l'ostacolo da sopra.
@@ -792,6 +780,7 @@ void PlayScene::DetectCollisions(float previousY) {
             pointerDownTimer = 0;
             mSteering = STEERING_NONE;
         }
+        // if he's not at the top of the obstacle, the player is free to move.
         else{
             isOnTop = false;
             mSteering = STEERING_TOUCH;
@@ -801,8 +790,6 @@ void PlayScene::DetectCollisions(float previousY) {
     int col = o->GetColAt(mPlayerPos.x);
     int row = o->GetRowAt(mPlayerPos.z);
 
-    // TODO: Verifica funzionamento di isOnTop.
-    //if (o->grid[col][row]) {
     if (o->grid[col][row] && !isOnTop) {
 
         // crashed against obstacle
@@ -825,10 +812,8 @@ void PlayScene::DetectCollisions(float previousY) {
         mLastCrashSection = mFirstSection;
 
 
-        // TODO: Ripristinare else if
-        // Se la colonna e' quella del bonus, e tocca il bonus direttamente o stando sopra l'ostacolo,
-        // allora prende il bonus.
-   // } else if (row == o->bonusRow && col == o->bonusCol) {
+        // if the column is the one with a bonus, and the bonus is taken directly or by staying at the top of the obstacle,
+        // then the bonus is obtained.
     } else if ( col == o->bonusCol && (isOnTop || row == o->bonusRow) ) {
         //ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
 
@@ -836,7 +821,6 @@ void PlayScene::DetectCollisions(float previousY) {
         AddScore(BONUS_POINTS);
         mBonusInARow++;
 
-        // TODO: Controlla funzionamento addScoreSign
         addScoreSign(true);
 
         if (mBonusInARow >= 10) {
@@ -846,8 +830,7 @@ void PlayScene::DetectCollisions(float previousY) {
         // update difficulty level, if applicable
         //Max level = 3, mDifficulty = 2
         int score = GetScore();
-        // TODO: Risolto hardwiring condizione mDifficulty.
-        //if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < 2) {
+
         if (mDifficulty < score / SCORE_PER_LEVEL && mDifficulty < MAX_DIFFICULTY) {
             mDifficulty = score / SCORE_PER_LEVEL;
             ShowLevelSign();
@@ -965,7 +948,7 @@ void PlayScene::HandleMenu(int menuItem) {
         case MENUITEM_RESUME:
             // resume from saved level
             //mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
-            // TODO: Risolto hardwiring MAX_DIFFICULTY
+
             if(mSavedCheckpoint >= MAX_DIFFICULTY)
                 mDifficulty = MAX_DIFFICULTY;
             else
@@ -1020,8 +1003,7 @@ UiWidget* PlayScene::NewPlayer() {
     return widget;
 }
 
-// TODO: Controllare funzionamento nuova function
-bool PlayScene::hasRestoredTimer(){
+bool PlayScene::restoreTimer(){
     if(storedPointerDownTimer > 0){
         pointerDownTimer += storedPointerDownTimer;
         storedPointerDownTimer = 0;
@@ -1030,8 +1012,6 @@ bool PlayScene::hasRestoredTimer(){
     else return false;
 }
 
-// TODO: Function che controlla che tipo di Sign bisogna dare
-//  quando il punteggio aumenta.
 void PlayScene::addScoreSign(bool hasBonus) {
     if(checkExtraLife()){
         ShowSign(S_EXTRA_LIFE,SIGN_DURATION);
@@ -1048,7 +1028,6 @@ void PlayScene::addScoreSign(bool hasBonus) {
     ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS);
 }
 
-// TODO: Function che restituisce true quando si puo' aggiungere una vita, false altrimenti.
 bool PlayScene::checkExtraLife() {
     return GetScore() >= (POINTS_FOR_EXTRA_LIFE * (extraLifeCounter+1));
 }

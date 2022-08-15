@@ -112,10 +112,7 @@ protected:
     // obstacle 0 is at section mFirstSection
     // obstacle 1 is at section mFirstSection + 1
     // and so on and so forth.
-    // TODO: Ripristinare MAX_OBS
-    //  [FAIL. Non fa niente.]
     static const int MAX_OBS = RENDER_TUNNEL_SECTION_COUNT * 2;
-    //static const int MAX_OBS = RENDER_TUNNEL_SECTION_COUNT * 4;
     int mFirstObstacle;
     int mObstacleCount;
     Obstacle mObstacleCircBuf[MAX_OBS];
@@ -203,12 +200,11 @@ protected:
     //timer to keep the jump
     int pointerDownTimer;
 
-    // TODO: Verificare il funzionamento di storedPointerDownTimer
-    // Memorizza il timer quando sta sopra l'ostacolo.
+    // stores the timer when it stays at the top of the obstacle.
     int storedPointerDownTimer;
-    // TODO: Verificare il funzionamento di isOnTop
+    // flag to tell when the player is at the top of an obstacle.
     bool isOnTop;
-    // TODO: Verificare il funzionamento di extraLifeCounter
+    // how many times has the player obtained an Extra Life?
     int extraLifeCounter;
 
     //height of the jump
@@ -243,8 +239,6 @@ protected:
         mFakeScore = (unsigned) s;
         mEncryptedScore = mFakeScore ^ 0x600673;
     }
-
-    bool checkExtraLife();
 
 // add to current score
     void AddScore(int s) {
@@ -326,13 +320,14 @@ protected:
     //create new player image
     UiWidget* NewPlayer();
 
-    // TODO: Controllare hasRestoredTimer()
-    //  [function che controlla se e' rimasto qualcosa in storedPointerDownTimer]
-    bool hasRestoredTimer();
+    // attempts to restore storedPointerDownTimer. Returns true when it succeded, false otherwise.
+    bool restoreTimer();
 
-    // TODO: Controllare addScoreSign()
-    //  [function che controlla se e' stata appena aggiunta una vita extra o no.]
+    // checks which sign should be placed when points are added.
     void addScoreSign(bool hasBonus);
+
+    // checks if the player can obtain an extra life or not.
+    bool checkExtraLife();
 };
 
 #endif
