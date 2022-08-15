@@ -170,4 +170,13 @@
 // checkpoint (save progress) every how many levels?
 #define LEVELS_PER_CHECKPOINT 2
 
+
+#define DEFAULT_JUMP_TIME 20
+#define MAX_DIFFICULTY 2
+// height variation in each frame
+#define HEIGHT_DELTA (jumpSpeed / 30.0)
+#define JUMP_HEIGHT 2.0f
+// necessary points to earn extra life
+#define POINTS_FOR_EXTRA_LIFE 10000
+
 #endif

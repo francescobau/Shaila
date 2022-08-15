@@ -44,4 +44,7 @@
 
 #define S_OK "OK"
 
+// TODO: Altre costanti stringhe
+#define S_EXTRA_LIFE "+1 EXTRA LIFE"
+
 #endif

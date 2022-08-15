@@ -200,6 +200,13 @@ protected:
     //timer to keep the jump
     int pointerDownTimer;
 
+    // stores the timer when it stays at the top of the obstacle.
+    int storedPointerDownTimer;
+    // flag to tell when the player is at the top of an obstacle.
+    bool isOnTop;
+    // how many times has the player obtained an Extra Life?
+    int extraLifeCounter;
+
     //height of the jump
     float jumpHeight;
 
@@ -236,7 +243,7 @@ protected:
         mEncryptedScore = mFakeScore ^ 0x600673;
     }
 
-    // add to current score
+// add to current score
     void AddScore(int s) {
         SetScore(GetScore() + s);
     }
@@ -315,6 +322,15 @@ protected:
 
     //create new player image
     UiWidget* NewPlayer();
+
+    // attempts to restore storedPointerDownTimer. Returns true when it succeded, false otherwise.
+    bool restoreTimer();
+
+    // checks which sign should be placed when points are added.
+    void addScoreSign(bool hasBonus);
+
+    // checks if the player can obtain an extra life or not.
+    bool checkExtraLife();
 };
 
 #endif
