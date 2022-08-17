@@ -207,6 +207,11 @@ protected:
     // how many times has the player obtained an Extra Life?
     int extraLifeCounter;
 
+    // TODO: Rimuovere variabili di debug.
+    FILE* outFile;
+    int remainedDebug;
+    bool canDebug;
+
     //height of the jump
     float jumpHeight;
 
@@ -334,6 +339,10 @@ protected:
 
     // adds extra life.
     void addExtralife();
+
+    // TODO: Rimuovere function di debug.
+    void beginDebug();
+
 };
 
 #endif

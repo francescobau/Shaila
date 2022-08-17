@@ -145,6 +145,11 @@ PlayScene::PlayScene() : Scene() {
 
     SetScore(0);
 
+    // TODO: Rimuovere istruzioni di debug.
+    outFile = fopen("output.txt","w");
+    remainedDebug = 10;
+    canDebug = true;
+
     /*
      * where do I put the program???
      */
@@ -420,6 +425,13 @@ void PlayScene::DoFrame() {
                 //jump finished
                 mSteering = STEERING_NONE;
 
+                // TODO: Rimuovere blocco debug.
+                if(canDebug){
+                    fprintf(outFile,"ON THE FLOOR\n");
+                    beginDebug();
+                    remainedDebug--;
+                }
+
                 //jumpSpeed set to maximum of 5.0f
                 if((jumpHeight * (mDifficulty+1)) > MAX_JUMP_SPEED)
                     jumpSpeed = MAX_JUMP_SPEED;
@@ -436,6 +448,13 @@ void PlayScene::DoFrame() {
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
+
+                    // TODO: Rimuovere blocco debug.
+                    if(canDebug && pointerDownTimer==halfJumpTime){
+                        fprintf(outFile,"MAX PEAK");
+                        beginDebug();
+                    }
+
                     //second half of action, falling
                     mPlayerPos.z -= HEIGHT_DELTA;
                     playerIconPos.y -= HEIGHT_DELTA / 10;
@@ -634,6 +653,13 @@ void PlayScene::UpdateMenuSelFromTouch(float x, float y) {
 // Converted OnPointerDown and OnPointerUp to sort of clickListener
 // The player is now jumping
 void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords) {
+
+    // TODO: Rimuovere blocco di debug.
+    if(canDebug){
+        fprintf(outFile,"START JUMP");
+        beginDebug();
+    }
+
     float x = coords->x, y = coords->y;
     if (mMenu) {
         if (coords->isScreen) {
@@ -787,29 +813,56 @@ void PlayScene::DetectCollisions(float previousY) {
 
     // corrects the player's position if it's at the top of the obstacle.
     else if( pointerDownTimer+1 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
-            isOnTop = true;
-            // mantiene la posizione se tocca l'ostacolo da sopra.
-            mPlayerPos.z += HEIGHT_DELTA;
-            playerIconPos.y += HEIGHT_DELTA / 10;
-            player->SetCenter(playerIconPos.x, playerIconPos.y);
-            storedPointerDownTimer = pointerDownTimer+1;
-            pointerDownTimer = 0;
-            mSteering = STEERING_NONE;
+
+        // TODO: Rimuovere blocco di debug.
+        if(canDebug){
+            fprintf(outFile,"ON THE TOP.\n");
+            beginDebug();
         }
-        // if it's not at the top of the obstacle, the player is free to move.
-        else{
-            isOnTop = false;
-            mSteering = STEERING_TOUCH;
+
+        isOnTop = true;
+        // mantiene la posizione se tocca l'ostacolo da sopra.
+        mPlayerPos.z += HEIGHT_DELTA;
+        playerIconPos.y += HEIGHT_DELTA / 10;
+        player->SetCenter(playerIconPos.x, playerIconPos.y);
+        storedPointerDownTimer = pointerDownTimer+1;
+        pointerDownTimer = 0;
+        mSteering = STEERING_NONE;
+    }
+    // if it's not at the top of the obstacle, the player is free to move.
+    else{
+        isOnTop = false;
+
+        // TODO: Rimuovere blocco di debug.
+        if(canDebug){
+            fprintf(outFile,"FALLING FROM ROOF.\n");
+            beginDebug();
         }
+
+        mSteering = STEERING_TOUCH;
+    }
 
     // what row/column is the player on?
     int col = o->GetColAt(mPlayerPos.x);
     int row = o->GetRowAt(mPlayerPos.z);
 
+    // TODO: Rimuovere blocco di debug.
+    if(canDebug){
+        fprintf(outFile,"[col  row]: [ %d  %d ]\n",col,row);
+        beginDebug();
+    }
+
     if (o->grid[col][row] && !isOnTop) {
 
+        // TODO: Rimuovere blocco di debug.
+        if(canDebug){
+            fprintf(outFile,"CRASHED BANDICOOT.\n");
+            beginDebug();
+        }
+
         // crashed against obstacle
-        mLives--;
+        // TODO: Rimuovere modalità GOD MODE
+//        mLives--;
 
         if (mLives > 0) {
             ShowSign(S_OUCH, SIGN_DURATION);
@@ -832,6 +885,12 @@ void PlayScene::DetectCollisions(float previousY) {
         // then the bonus is obtained.
     } else if ( col == o->bonusCol && (isOnTop || row == o->bonusRow) ) {
         //ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
+
+        // TODO: Rimuovere blocco debug.
+        if(canDebug){
+            fprintf(outFile,"BONUS ACHIEVED.\n");
+            beginDebug();
+        }
 
         o->DeleteBonus();
         AddScore(BONUS_POINTS);
@@ -1031,7 +1090,7 @@ bool PlayScene::restoreTimer(){
 void PlayScene::addScoreSign(bool hasBonus) {
     if(checkExtraLife() && hasBonus){
         addExtralife();
-        ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS;
+        ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS);
         return;
     }
     if(hasBonus){
@@ -1054,4 +1113,15 @@ void PlayScene::addExtralife() {
     SfxMan::GetInstance()->PlayTone(TONE_LEVEL_UP);
     mLives++;
     extraLifeCounter++;
+}
+
+void PlayScene::beginDebug(){
+    if(!remainedDebug){
+        canDebug = false;
+        fclose(outFile);
+        ShowSign("END DEBUG",SIGN_DURATION);
+        return;
+    }
+    fprintf(outFile,DEBUG_STRING,
+            mPlayerPos.x,mPlayerPos.y,mPlayerPos.z,playerIconPos.x,playerIconPos.y);
 }
