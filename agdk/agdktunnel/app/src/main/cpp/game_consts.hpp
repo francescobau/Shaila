@@ -178,5 +178,7 @@
 #define JUMP_HEIGHT 2.0f
 // necessary points to earn extra life
 #define POINTS_FOR_EXTRA_LIFE 10000
+// maximum jump speed
+#define MAX_JUMP_SPEED 5.0f
 
 #endif
