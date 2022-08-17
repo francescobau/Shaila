@@ -343,7 +343,7 @@ void PlayScene::DoFrame() {
     glm::vec3 upVec = glm::vec3(-sin(0), 0, cos(0));
 
     //camera posizionata in modo da vedere solo un lato del tunnel
-    glm::vec3 cameraPos = glm::vec3(mPlayerPos.x - 1.37f * mPlayerPos.x, mPlayerPos.y + screenAspect*10 - 1.15f*screenHeight/100, 1.86f*screenHeight/1000);
+    glm::vec3 cameraPos = glm::vec3(- 0.37f * mPlayerPos.x, mPlayerPos.y + screenAspect*10 - 1.15f*screenHeight/100, 1.86f*screenHeight/1000);
 
 
     // set up view matrix according to player's ship position and direction
@@ -421,8 +421,8 @@ void PlayScene::DoFrame() {
                 mSteering = STEERING_NONE;
 
                 //jumpSpeed set to maximum of 5.0f
-                if((jumpHeight * (mDifficulty+1)) > 5.0f)
-                    jumpSpeed = 5.0f;
+                if((jumpHeight * (mDifficulty+1)) > MAX_JUMP_SPEED)
+                    jumpSpeed = MAX_JUMP_SPEED;
                 else
                     jumpSpeed = jumpHeight * (mDifficulty+1);
                 halfJumpTime = DEFAULT_JUMP_TIME / (2 * (mDifficulty+1));
@@ -786,7 +786,7 @@ void PlayScene::DetectCollisions(float previousY) {
     }
 
     // corrects the player's position if it's at the top of the obstacle.
-    else if( pointerDownTimer+2 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
+    else if( pointerDownTimer+1 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
             isOnTop = true;
             // mantiene la posizione se tocca l'ostacolo da sopra.
             mPlayerPos.z += HEIGHT_DELTA;
@@ -796,7 +796,7 @@ void PlayScene::DetectCollisions(float previousY) {
             pointerDownTimer = 0;
             mSteering = STEERING_NONE;
         }
-        // if he's not at the top of the obstacle, the player is free to move.
+        // if it's not at the top of the obstacle, the player is free to move.
         else{
             isOnTop = false;
             mSteering = STEERING_TOUCH;
@@ -1029,21 +1029,29 @@ bool PlayScene::restoreTimer(){
 }
 
 void PlayScene::addScoreSign(bool hasBonus) {
-    if(checkExtraLife()){
-        ShowSign(S_EXTRA_LIFE,SIGN_DURATION);
-        // Aggiunto suono quando c'e' una vita extra.
-        SfxMan::GetInstance()->PlayTone(TONE_LEVEL_UP);
-        mLives++;
-        extraLifeCounter++;
+    if(checkExtraLife() && hasBonus){
+        addExtralife();
+        ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS;
+        return;
     }
-    else if(hasBonus){
+    if(hasBonus){
         ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
         return;
     }
-    // Se arriva a questo punto, significa che entrambe le condizioni sono soddisfatte.
-    ShowSign(S_GOT_BONUS "\n" S_EXTRA_LIFE, SIGN_DURATION_BONUS);
+    if(checkExtraLife()){
+        addExtralife();
+        ShowSign(S_EXTRA_LIFE,SIGN_DURATION);
+        return;
+    }
 }
 
 bool PlayScene::checkExtraLife() {
     return GetScore() >= (POINTS_FOR_EXTRA_LIFE * (extraLifeCounter+1));
+}
+
+void PlayScene::addExtralife() {
+    // Aggiunto suono quando c'e' una vita extra.
+    SfxMan::GetInstance()->PlayTone(TONE_LEVEL_UP);
+    mLives++;
+    extraLifeCounter++;
 }

@@ -331,6 +331,9 @@ protected:
 
     // checks if the player can obtain an extra life or not.
     bool checkExtraLife();
+
+    // adds extra life.
+    void addExtralife();
 };
 
 #endif
