@@ -93,7 +93,7 @@ PlayScene::PlayScene() : Scene() {
 
     halfJumpTime = DEFAULT_JUMP_TIME / 2;
     jumpHeight = JUMP_HEIGHT;
-    jumpSpeed = jumpHeight * (MAX_DIFFICULTY+1);
+    jumpSpeed = jumpHeight * (mDifficulty+1);
 
     mObstacleCount = 0;
     mFirstObstacle = 0;
@@ -420,23 +420,25 @@ void PlayScene::DoFrame() {
                 //jump finished
                 mSteering = STEERING_NONE;
 
+                //jumpSpeed set to maximum of 5.0f
+                if((jumpHeight * (mDifficulty+1)) > 5.0f)
+                    jumpSpeed = 5.0f;
+                else
+                    jumpSpeed = jumpHeight * (mDifficulty+1);
+                halfJumpTime = DEFAULT_JUMP_TIME / (2 * (mDifficulty+1));
             } else {
                 //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
 
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
-
                     mPlayerPos.z += HEIGHT_DELTA;
                     playerIconPos.y += HEIGHT_DELTA / 10;
-
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 else {
                     //second half of action, falling
-
                     mPlayerPos.z -= HEIGHT_DELTA;
                     playerIconPos.y -= HEIGHT_DELTA / 10;
-
                     player->SetCenter(playerIconPos.x, playerIconPos.y);
                 }
                 pointerDownTimer--;
@@ -647,8 +649,8 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         // manages timers, checking if the player is on the floor or not.
         if(restoreTimer())
             halfJumpTime += pointerDownTimer;
-        else halfJumpTime = DEFAULT_JUMP_TIME / 2;
-        pointerDownTimer += DEFAULT_JUMP_TIME;
+        else halfJumpTime = DEFAULT_JUMP_TIME / (2 * (mDifficulty+1));
+        pointerDownTimer += DEFAULT_JUMP_TIME / (mDifficulty+1);
 
         //mShipAnchorX = mPlayerPos.x;
         //mShipAnchorZ = mPlayerPos.z;
