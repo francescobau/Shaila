@@ -171,7 +171,7 @@
 #define LEVELS_PER_CHECKPOINT 2
 
 
-#define DEFAULT_JUMP_TIME 20
+#define DEFAULT_JUMP_TIME 60
 #define MAX_DIFFICULTY 2
 // height variation in each frame
 #define HEIGHT_DELTA (jumpSpeed / 30.0)
