@@ -146,9 +146,8 @@ PlayScene::PlayScene() : Scene() {
     SetScore(0);
 
     // TODO: Rimuovere istruzioni di debug.
-    outFile = fopen("output.txt","w");
-    remainedDebug = 10;
-    canDebug = true;
+//    outFile = fopen("./output.txt","wb+");
+//    remainedDebug = 10;
 
     /*
      * where do I put the program???
@@ -426,7 +425,7 @@ void PlayScene::DoFrame() {
                 mSteering = STEERING_NONE;
 
                 // TODO: Rimuovere blocco debug.
-                if(canDebug){
+                if(canDebug()){
                     fprintf(outFile,"ON THE FLOOR\n");
                     beginDebug();
                     remainedDebug--;
@@ -450,7 +449,7 @@ void PlayScene::DoFrame() {
                 else {
 
                     // TODO: Rimuovere blocco debug.
-                    if(canDebug && pointerDownTimer==halfJumpTime){
+                    if(canDebug() && pointerDownTimer==halfJumpTime){
                         fprintf(outFile,"MAX PEAK");
                         beginDebug();
                     }
@@ -655,7 +654,7 @@ void PlayScene::UpdateMenuSelFromTouch(float x, float y) {
 void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords) {
 
     // TODO: Rimuovere blocco di debug.
-    if(canDebug){
+    if(canDebug()){
         fprintf(outFile,"START JUMP");
         beginDebug();
     }
@@ -815,7 +814,7 @@ void PlayScene::DetectCollisions(float previousY) {
     else if( pointerDownTimer+1 >= halfJumpTime/2 && pointerDownTimer+1 < halfJumpTime){
 
         // TODO: Rimuovere blocco di debug.
-        if(canDebug){
+        if(canDebug()){
             fprintf(outFile,"ON THE TOP.\n");
             beginDebug();
         }
@@ -834,7 +833,7 @@ void PlayScene::DetectCollisions(float previousY) {
         isOnTop = false;
 
         // TODO: Rimuovere blocco di debug.
-        if(canDebug){
+        if(canDebug()){
             fprintf(outFile,"FALLING FROM ROOF.\n");
             beginDebug();
         }
@@ -847,7 +846,7 @@ void PlayScene::DetectCollisions(float previousY) {
     int row = o->GetRowAt(mPlayerPos.z);
 
     // TODO: Rimuovere blocco di debug.
-    if(canDebug){
+    if(canDebug()){
         fprintf(outFile,"[col  row]: [ %d  %d ]\n",col,row);
         beginDebug();
     }
@@ -855,7 +854,7 @@ void PlayScene::DetectCollisions(float previousY) {
     if (o->grid[col][row] && !isOnTop) {
 
         // TODO: Rimuovere blocco di debug.
-        if(canDebug){
+        if(canDebug()){
             fprintf(outFile,"CRASHED BANDICOOT.\n");
             beginDebug();
         }
@@ -887,7 +886,7 @@ void PlayScene::DetectCollisions(float previousY) {
         //ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
 
         // TODO: Rimuovere blocco debug.
-        if(canDebug){
+        if(canDebug()){
             fprintf(outFile,"BONUS ACHIEVED.\n");
             beginDebug();
         }
@@ -1116,12 +1115,20 @@ void PlayScene::addExtralife() {
 }
 
 void PlayScene::beginDebug(){
-    if(!remainedDebug){
-        canDebug = false;
-        fclose(outFile);
-        ShowSign("END DEBUG",SIGN_DURATION);
-        return;
-    }
+    if(!canDebug()) return;
     fprintf(outFile,DEBUG_STRING,
             mPlayerPos.x,mPlayerPos.y,mPlayerPos.z,playerIconPos.x,playerIconPos.y);
+}
+
+bool PlayScene::canDebug() {
+    if(!outFile){
+        ShowSign("FOPEN FAIL.",SIGN_DURATION);
+        return false;
+    }
+    if(!remainedDebug){
+        ShowSign("END DEBUG",SIGN_DURATION);
+        fclose(outFile);
+        return false;
+    }
+    return true;
 }

@@ -208,9 +208,8 @@ protected:
     int extraLifeCounter;
 
     // TODO: Rimuovere variabili di debug.
-    FILE* outFile;
-    int remainedDebug;
-    bool canDebug;
+    FILE* outFile = fopen("output.txt","wb+");
+    int remainedDebug = 10;
 
     //height of the jump
     float jumpHeight;
@@ -342,6 +341,7 @@ protected:
 
     // TODO: Rimuovere function di debug.
     void beginDebug();
+    bool canDebug();
 
 };
 
