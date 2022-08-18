@@ -36,6 +36,26 @@
 static const float MENUITEM_SEL_COLOR[] = {1.0f, 1.0f, 0.0f};
 static const float MENUITEM_COLOR[] = {1.0f, 1.0f, 1.0f};
 
+// TODO: Rimuovere variabili e function di debug
+static FILE* outFile;
+static bool isOpen;
+static int counter = 0,nDebug = 0;
+
+static bool openDebugFile() {
+    if(isOpen){
+//        ShowSign("Already open",SIGN_DURATION/SIGN_DURATION);
+        return true;
+    }
+//    ShowSign("Attempting to open...",SIGN_DURATION/SIGN_DURATION);
+    outFile = fopen("output.txt","w+");
+    if(!outFile){
+//        ShowSign("FOPEN FAILED TO START.",SIGN_DURATION);
+        return false;
+    }
+    nDebug = 10;
+    return true;
+}
+
 // obstacle colors
 static const float OBS_COLORS[] = {
         0.0f, 0.0f, 0.0f, // style 0 (not used)
@@ -146,8 +166,7 @@ PlayScene::PlayScene() : Scene() {
     SetScore(0);
 
     // TODO: Rimuovere istruzioni di debug.
-//    outFile = fopen("./output.txt","wb+");
-//    remainedDebug = 10;
+    isOpen = openDebugFile();
 
     /*
      * where do I put the program???
@@ -271,6 +290,11 @@ void PlayScene::OnStartGraphics() {
     mTrivialShader = new TrivialShader();
     mTrivialShader->Compile();
     player->StartGraphics();
+
+    // TODO: Rimuovere blocco di debug.
+//    isOpen = openDebugFile();
+    if(!( (++counter)%10 ))
+        ShowSign(&""[counter],SIGN_DURATION);
 
     // build projection matrix
     UpdateProjectionMatrix();
@@ -426,9 +450,12 @@ void PlayScene::DoFrame() {
 
                 // TODO: Rimuovere blocco debug.
                 if(canDebug()){
-                    fprintf(outFile,"ON THE FLOOR\n");
+                    if(isOnTop)
+                        fprintf(outFile,"ON THE ROOF\n");
+                    else
+                        fprintf(outFile,"ON THE FLOOR\n");
                     beginDebug();
-                    remainedDebug--;
+                    nDebug--;
                 }
 
                 //jumpSpeed set to maximum of 5.0f
@@ -1122,10 +1149,10 @@ void PlayScene::beginDebug(){
 
 bool PlayScene::canDebug() {
     if(!outFile){
-        ShowSign("FOPEN FAIL.",SIGN_DURATION);
+        ShowSign("FILE ERROR.",SIGN_DURATION);
         return false;
     }
-    if(!remainedDebug){
+    if(!nDebug){
         ShowSign("END DEBUG",SIGN_DURATION);
         fclose(outFile);
         return false;

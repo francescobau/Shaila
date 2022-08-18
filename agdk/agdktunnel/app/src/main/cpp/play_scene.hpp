@@ -207,10 +207,6 @@ protected:
     // how many times has the player obtained an Extra Life?
     int extraLifeCounter;
 
-    // TODO: Rimuovere variabili di debug.
-    FILE* outFile = fopen("output.txt","wb+");
-    int remainedDebug = 10;
-
     //height of the jump
     float jumpHeight;
 
