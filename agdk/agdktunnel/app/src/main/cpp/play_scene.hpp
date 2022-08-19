@@ -206,6 +206,9 @@ protected:
     bool isOnTop;
     // how many times has the player obtained an Extra Life?
     int extraLifeCounter;
+    // TODO: Controllare previousZ [altezza precedente] e counter.
+    float previousZ;
+    int counter;
 
     //height of the jump
     float jumpHeight;
@@ -335,9 +338,6 @@ protected:
     // adds extra life.
     void addExtralife();
 
-    // TODO: Rimuovere function di debug.
-    void beginDebug();
-    bool canDebug();
 
 };
 

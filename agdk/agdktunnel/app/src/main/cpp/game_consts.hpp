@@ -180,7 +180,5 @@
 #define POINTS_FOR_EXTRA_LIFE 10000
 // maximum jump speed
 #define MAX_JUMP_SPEED 5.0f
-// TODO: Rimuovere costante di debug.
-#define DEBUG_STRING "mPlayerPos_xyz = ( %f %f %f )\nplayerIconPos_xy = ( %f %f )\n\n"
 
 #endif
