@@ -115,11 +115,15 @@ void WelcomeScene::OnButtonClicked(int id) {
         if(mAboutButtonPressed % 2) {
             GetWidgetById(mStoryButtonId)->SetVisible(false)->SetEnabled(false);
             GetWidgetById(mAboutMessageId)->SetText(aboutText.c_str())->SetVisible(true);
+            // transforms "About" button's text in "Back".
+            GetWidgetById(mAboutButtonId)->SetText(S_BACK);
         }
         else {
             GetWidgetById(mStoryButtonId)->SetVisible(true)->SetEnabled(true);
             mAboutButtonPressed = 0;
             GetWidgetById(mAboutMessageId)->SetVisible(false);
+            // restores "About" button's text.
+            GetWidgetById(mAboutButtonId)->SetText(S_ABOUT);
         }
     } else if (id == mNameEdit->GetId()) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
