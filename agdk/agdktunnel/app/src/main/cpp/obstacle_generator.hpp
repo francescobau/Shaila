@@ -44,10 +44,6 @@ private:
     void GenIntermediate(Obstacle *result);
 
     void GenHard(Obstacle *result);
-
-    void FillRow(Obstacle *result, int row);
-
-    void FillCol(Obstacle *result, int col);
 };
 
 #endif

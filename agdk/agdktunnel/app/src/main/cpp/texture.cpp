@@ -30,11 +30,6 @@ void Texture::InitFromRawRGB(int width, int height, bool hasAlpha, const unsigne
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-    //aggiunte per vedere se texture caricate a schermo intero
-    //width = 1920;
-    //height = 1080;
-    //Non ha funzionato
-
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

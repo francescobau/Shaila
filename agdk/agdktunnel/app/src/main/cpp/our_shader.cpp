@@ -82,9 +82,7 @@ void OurShader::SetTexture(Texture *t) {
 
 void OurShader::EnablePointLight(glm::vec3 pos, float r, float g, float b) {
     MY_ASSERT(mPreparedVertexBuf != NULL);
-    //Tolta funzione di modificare tinta alle texture e punto di luce
-    //glUniform4f(mPointLightColorLoc, r, g, b, 1.0);
-    //glUniform4f(mPointLightPosLoc, pos.x, pos.y, pos.z, 1.0);
+    //deleted function that gave tint and point of light to textures
 }
 
 void OurShader::DisablePointLight() {

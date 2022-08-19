@@ -168,7 +168,6 @@ LoaderScene::LoaderScene() : mTextureLoader(new LoaderScene::TextureLoader()) {
     mLoadingWidget = NULL;
     mTextBoxId = -1;
     mStartTime = 0;
-    //mDataStateMachine = NativeEngine::GetInstance()->BeginSavedGameLoad();
 }
 
 LoaderScene::~LoaderScene() {
@@ -201,10 +200,6 @@ void LoaderScene::DoFrame() {
         //mDataStateMachine->isLoadingDataCompleted()) {
         mTextureLoader->CreateTextures();
 
-        // Inform performance tuner we are done loading
-        //TuningManager *tuningManager = NativeEngine::GetInstance()->GetTuningManager();
-        //tuningManager->FinishLoading();
-
         timespec currentTimeSpec;
         clock_gettime(CLOCK_MONOTONIC, &currentTimeSpec);
         uint64_t currentTime = currentTimeSpec.tv_sec * 1000 + (currentTimeSpec.tv_nsec / 1000000);
@@ -215,10 +210,8 @@ void LoaderScene::DoFrame() {
         SceneManager *mgr = SceneManager::GetInstance();
         mgr->RequestNewScene(new PlayScene());
     } else {
-        float totalLoad = mTextureLoader->TotalNumberToLoad(); //+ DATA_LOAD_DELTA;
-                                                                //mDataStateMachine->getTotalSteps();
-        float completedLoad = mTextureLoader->NumberCompetedLoading(); //+ DATA_LOAD_DELTA;
-                                                                        //mDataStateMachine->getStepsCompleted();
+        float totalLoad = mTextureLoader->TotalNumberToLoad();
+        float completedLoad = mTextureLoader->NumberCompetedLoading();
 
         int loadingPercentage = static_cast<int>(completedLoad * 100 / totalLoad);
         char progressString[64];
@@ -246,5 +239,5 @@ void LoaderScene::OnCreateWidgets() {
 }
 
 void LoaderScene::RenderBackground() {
-    //RenderBackgroundAnimation(mShapeRenderer);
+
 }

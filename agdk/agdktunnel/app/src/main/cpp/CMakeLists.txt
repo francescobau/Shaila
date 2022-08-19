@@ -68,7 +68,6 @@ add_library(game SHARED
      ${PROTO_GENS_DIR}/nano/dev_tuningfork.pb.c
      ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
      android_main.cpp
-     anim.cpp
      ascii_to_geom.cpp
      game_activity_included.cpp
      game_asset_manager.cpp

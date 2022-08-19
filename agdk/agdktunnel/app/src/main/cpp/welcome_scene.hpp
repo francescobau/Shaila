@@ -41,10 +41,9 @@ protected:
     int mPlayButtonId;
     int mStoryButtonId;
     int mAboutButtonId;
+    int mAboutMessageId;
     UiWidget *mNameEdit;
-    int mTestButtonId;
     int mQuitButtonId;
-    int mMemoryButtonId;
 
     OwnedGameTextInputState mTextInputState;
 
@@ -75,7 +74,7 @@ public:
  private:
     // Complete about text, including insets.
     std::string AboutMessage();
-
+    int mAboutButtonPressed = 0;
 };
 
 #endif

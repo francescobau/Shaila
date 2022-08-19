@@ -30,8 +30,8 @@ class OurShader;
 
 #define MAX_WALL_TEXTURES 16
 
-/* This is the gameplay scene -- the scene that shows the player flying down
- * the infinite tunnel, dodging obstacles, collecting bonuses and being awesome. */
+/* This is the gameplay scene -- the scene that shows the player running on
+ * the lawn, dodging obstacles, collecting bonuses and being awesome. */
 class PlayScene : public Scene {
 public:
     PlayScene();
@@ -243,7 +243,7 @@ protected:
         mEncryptedScore = mFakeScore ^ 0x600673;
     }
 
-// add to current score
+    // add to current score
     void AddScore(int s) {
         SetScore(GetScore() + s);
     }
@@ -323,7 +323,7 @@ protected:
     //create new player image
     UiWidget* NewPlayer();
 
-    // attempts to restore storedPointerDownTimer. Returns true when it succeded, false otherwise.
+    // attempts to restore storedPointerDownTimer. Returns true when it succeed, false otherwise.
     bool restoreTimer();
 
     // checks which sign should be placed when points are added.

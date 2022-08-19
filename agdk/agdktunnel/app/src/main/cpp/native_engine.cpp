@@ -114,17 +114,9 @@ NativeEngine::NativeEngine(struct android_app *app) {
         ALOGI("Initialized MemoryAdvice");
     }
 
-    // Initialize the memory consumer, used to exercise the
-    // Memory Advice library. Off by default.
-    //mMemoryConsumer = new MemoryConsumer(false);
-
     ALOGI("Calling SwappyGL_init");
     SwappyGL_init(GetJniEnv(), mApp->activity->javaGameActivity);
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
-
-    //mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
-
-    //WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
 
     // This is needed to allow controller events through to us.
     // By default, only touch-screen events are passed through, to match the
@@ -147,7 +139,6 @@ NativeEngine *NativeEngine::GetInstance() {
 
 NativeEngine::~NativeEngine() {
     VLOGD("NativeEngine: destructor running");
-    //delete mTuningManager;
     Paddleboat_setControllerStatusCallback(NULL, NULL);
     Paddleboat_destroy(GetJniEnv());
     SwappyGL_destroy();
@@ -169,11 +160,6 @@ static void _handle_cmd_proxy(struct android_app *app, int32_t cmd) {
     NativeEngine *engine = (NativeEngine *) app->userData;
     engine->HandleCommand(cmd);
 }
-
-//static int _handle_input_proxy(struct android_app* app, AInputEvent* event) {
-//    NativeEngine *engine = (NativeEngine*) app->userData;
-//    return engine->HandleInput(event) ? 1 : 0;
-//}
 
 bool NativeEngine::IsAnimating() {
     return mHasFocus && mIsVisible && mHasWindow;
@@ -223,7 +209,6 @@ static bool _cooked_event_callback(struct CookedEvent *event) {
 void NativeEngine::GameLoop() {
     mApp->userData = this;
     mApp->onAppCmd = _handle_cmd_proxy;
-    //mApp->onInputEvent = _handle_input_proxy;
 
     while (1) {
         int events;
@@ -243,7 +228,6 @@ void NativeEngine::GameLoop() {
             }
         }
 
-        //mMemoryConsumer->Update();
         mGameAssetManager->UpdateGameAssetManager();
         Paddleboat_update(GetJniEnv());
         HandleGameActivityInput();

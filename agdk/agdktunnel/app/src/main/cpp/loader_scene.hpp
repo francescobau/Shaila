@@ -45,8 +45,6 @@ protected:
 
     virtual void RenderBackground() override;
 
-    //DataLoaderStateMachine *mDataStateMachine;
-
 public:
 
     LoaderScene();

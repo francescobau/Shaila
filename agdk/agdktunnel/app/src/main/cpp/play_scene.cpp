@@ -427,8 +427,6 @@ void PlayScene::DoFrame() {
                     jumpSpeed = jumpHeight * (mDifficulty+1);
                 halfJumpTime = DEFAULT_JUMP_TIME / (2 * (mDifficulty+1));
             } else {
-                //mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
-
                 if(pointerDownTimer > halfJumpTime) {
                     //first half of action, jump of dim 2
                     mPlayerPos.z += HEIGHT_DELTA;
@@ -644,7 +642,6 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         mPointerId = pointerId;
         mPointerAnchorX = x;
         mPointerAnchorY = y;
-        //mPlayerPos.z = mPlayerPos.z + 1;
 
         // manages timers, checking if the player is on the floor or not.
         if(restoreTimer())
@@ -652,8 +649,6 @@ void PlayScene::OnPointerDown(int pointerId, const struct PointerCoords *coords)
         else halfJumpTime = DEFAULT_JUMP_TIME / (2 * (mDifficulty+1));
         pointerDownTimer += DEFAULT_JUMP_TIME / (mDifficulty+1);
 
-        //mShipAnchorX = mPlayerPos.x;
-        //mShipAnchorZ = mPlayerPos.z;
         mSteering = STEERING_TOUCH;
     }
 }
@@ -666,8 +661,7 @@ void PlayScene::OnPointerUp(int pointerId, const struct PointerCoords *coords) {
             HandleMenu(mMenuItems[mMenuSel]);
         }
     } else if (pointerId == mPointerId) {
-        //mPlayerPos.z = mPlayerPos.z - 1;
-        //mSteering = STEERING_NONE;
+
     }
 }
 
@@ -744,12 +738,8 @@ void PlayScene::RenderHUD() {
 
 void PlayScene::RenderMenu() {
     float aspect = SceneManager::GetInstance()->GetScreenAspect();
-    // NCT_COMMENT glm::mat4 modelMat;
-    // NCT_COMMENT glm::mat4 mat;
 
     glDisable(GL_DEPTH_TEST);
-
-    //RenderBackgroundAnimation(mShapeRenderer);
 
     float scaleFactor = SineWave(1.0f, MENUITEM_PULSE_AMOUNT, MENUITEM_PULSE_PERIOD, 0.0f);
 
@@ -963,8 +953,6 @@ void PlayScene::HandleMenu(int menuItem) {
             break;
         case MENUITEM_RESUME:
             // resume from saved level
-            //mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
-
             if(mSavedCheckpoint >= MAX_DIFFICULTY)
                 mDifficulty = MAX_DIFFICULTY;
             else
