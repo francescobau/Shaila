@@ -34,7 +34,12 @@
 #include <android/window.h>
 #include <sstream>
 
-#define ABOUTMESSAGE_POS 0.4f, 0.5f //center, 0.15f
+// TODO: Da controllare proprieta' story message.
+#define STORYMESSAGE_POS BUTTON_ABOUT_POS
+#define STORYMESSAGE_FONT_SCALE 0.5f
+#define STORYMESSAGE_COLOR 1.0f, 1.0f, 0.0f
+
+#define ABOUTMESSAGE_POS BUTTON_STORY_POS
 #define ABOUTMESSAGE_FONT_SCALE 0.5f
 #define ABOUTMESSAGE_COLOR 0.0f, 1.0f, 0.0f
 
@@ -101,6 +106,13 @@ std::string WelcomeScene::AboutMessage() {
     return aboutStream.str();
 }
 
+// TODO: Da verificare problema della stream con dimensione limitata.
+std::string WelcomeScene::StoryMessage(){
+    std::stringstream storyStream;
+    storyStream << "Help Shaila to restore\nthe magic in the world!";
+    return storyStream.str();
+};
+
 void WelcomeScene::OnButtonClicked(int id) {
     SceneManager *mgr = SceneManager::GetInstance();
 
@@ -108,19 +120,42 @@ void WelcomeScene::OnButtonClicked(int id) {
 
        mgr->RequestNewScene(new LoaderScene());
     } else if (id == mStoryButtonId) {
-
+        // changes the state of the flag
+        mIsStoryButtonSelected = !mIsStoryButtonSelected;
+        // Story button is selected -> shows Story message
+        std::string storyText = StoryMessage();
+        GetWidgetById(mAboutButtonId)->SetVisible(!mIsStoryButtonSelected)->SetEnabled(!mIsStoryButtonSelected);
+        // TODO: Rimuovere variazione stato Play e Quit
+        GetWidgetById(mPlayButtonId)->SetVisible(!mIsStoryButtonSelected)->SetEnabled(!mIsStoryButtonSelected);
+        GetWidgetById(mQuitButtonId)->SetVisible(!mIsStoryButtonSelected)->SetEnabled(!mIsStoryButtonSelected);
+        // Story button is selected -> shows Story message
+        if(mIsStoryButtonSelected){
+            GetWidgetById(mStoryMessageId)->SetText(storyText.c_str())->SetVisible(true);
+            // transforms "Story" button's text in "Back".
+            GetWidgetById(mStoryButtonId)->SetText(S_BACK);
+        }
+        // Back button is selected -> restores previous state.
+        else {
+            GetWidgetById(mStoryMessageId)->SetVisible(false);
+            // restores "About" button's text.
+            GetWidgetById(mStoryButtonId)->SetText(S_STORY);
+        }
     } else if (id == mAboutButtonId) {
-        mAboutButtonPressed++;
+        // changes the state of the flag
+        mIsAboutButtonSelected = !mIsAboutButtonSelected;
         std::string aboutText = AboutMessage();
-        if(mAboutButtonPressed % 2) {
-            GetWidgetById(mStoryButtonId)->SetVisible(false)->SetEnabled(false);
+        GetWidgetById(mStoryButtonId)->SetVisible(!mIsAboutButtonSelected)->SetEnabled(!mIsAboutButtonSelected);
+        // TODO: Rimuovere variazione stato Play e Quit
+        GetWidgetById(mPlayButtonId)->SetVisible(!mIsAboutButtonSelected)->SetEnabled(!mIsAboutButtonSelected);
+        GetWidgetById(mQuitButtonId)->SetVisible(!mIsAboutButtonSelected)->SetEnabled(!mIsAboutButtonSelected);
+        // About button is selected -> shows About message
+        if(mIsAboutButtonSelected) {
             GetWidgetById(mAboutMessageId)->SetText(aboutText.c_str())->SetVisible(true);
             // transforms "About" button's text in "Back".
             GetWidgetById(mAboutButtonId)->SetText(S_BACK);
         }
+        // Back button is selected -> restores previous state.
         else {
-            GetWidgetById(mStoryButtonId)->SetVisible(true)->SetEnabled(true);
-            mAboutButtonPressed = 0;
             GetWidgetById(mAboutMessageId)->SetVisible(false);
             // restores "About" button's text.
             GetWidgetById(mAboutButtonId)->SetText(S_ABOUT);
@@ -199,6 +234,11 @@ void WelcomeScene::OnCreateWidgets() {
             ->SetCenter(BUTTON_STORY_POS)->SetSize(BUTTON_SIDEBUTTON_SIZE)
             ->SetFontScale(BUTTON_FONT_SCALE)->SetIsButton(true)
             ->SetTransition(UiWidget::TRANS_FROM_RIGHT)->GetId();
+
+    // story message
+    mStoryMessageId = NewWidget()->SetText(StoryMessage().c_str())->SetCenter(
+            STORYMESSAGE_POS)->SetTextColor(STORYMESSAGE_COLOR)->SetFontScale(STORYMESSAGE_FONT_SCALE)->SetTransition(
+            UiWidget::TRANS_FROM_LEFT)->SetIsButton(false)->SetVisible(false)->GetId();
 
     // about button
     mAboutButtonId = NewWidget()->SetTextColor(BUTTON_COLOR)->SetText(S_ABOUT)

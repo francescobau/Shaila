@@ -44,7 +44,7 @@
 
 #define S_OK "OK"
 
-#define S_BACK "--BACK--"
+#define S_BACK "[Back]"
 #define S_EXTRA_LIFE "+1 EXTRA LIFE"
 
 #endif

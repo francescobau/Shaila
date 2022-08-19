@@ -40,6 +40,7 @@ protected:
     // IDs for our buttons:
     int mPlayButtonId;
     int mStoryButtonId;
+    int mStoryMessageId;
     int mAboutButtonId;
     int mAboutMessageId;
     UiWidget *mNameEdit;
@@ -74,7 +75,9 @@ public:
  private:
     // Complete about text, including insets.
     std::string AboutMessage();
-    int mAboutButtonPressed = 0;
+    std::string StoryMessage();
+    bool mIsAboutButtonSelected = false;
+    bool mIsStoryButtonSelected = false;
 };
 
 #endif
