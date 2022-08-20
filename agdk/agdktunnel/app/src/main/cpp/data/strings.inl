@@ -31,20 +31,14 @@
 #define S_START_OVER "Start Over"
 #define S_RESUME "Start from checkpoint"
 
-#define S_TITLE "Game"
+#define S_TITLE "Shaila"
 #define S_PLAY "Play!"
 #define S_NAME_EDIT "Edit your name"
 
 #define S_PLEASE_WAIT "Please wait..."
 
-#define S_STORY "Story"
-#define S_ABOUT "About"
-#define S_TEST "Run tests"
-#define S_MEMORY "Consume Memory"
-
 #define S_OK "OK"
 
-#define S_BACK "[Back]"
 #define S_EXTRA_LIFE "+1 EXTRA LIFE"
 
 #endif
