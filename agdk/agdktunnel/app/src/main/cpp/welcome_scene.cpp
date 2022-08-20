@@ -36,7 +36,7 @@
 
 #define TITLE_POS center, 0.15f
 #define TITLE_FONT_SCALE 1.0f
-#define TITLE_COLOR 0.0f, 1.0f, 0.0f
+#define TITLE_COLOR 0.0f, 1.0f, 1.0f
 
 #define NAME_EDIT_POS center, 0.85f
 #define NAME_EDIT_FONT_SCALE 0.7f
@@ -44,8 +44,9 @@
 #define NAME_EDIT_SIZE 1.0f, 0.2f
 
 // button defaults:
-#define BUTTON_COLOR 0.75f, 0.25f, 0.5f
 #define BUTTON_FONT_SCALE 1.0f
+#define PLAY_BUTTON_COLOR 0.25f, 1.0f, 0.25f
+#define QUIT_BUTTON_COLOR 1.0f, 0.25f, 0.25f
 
 // button geometry
 #define BUTTON_PLAY_POS (center - 0.4f), 0.45f
@@ -156,7 +157,7 @@ void WelcomeScene::OnCreateWidgets() {
             ->SetFontScale(TITLE_FONT_SCALE)->SetTransition(UiWidget::TRANS_FROM_BOTTOM);
 
     // create the "play" button
-    mPlayButtonId = NewWidget()->SetText(S_PLAY)->SetTextColor(BUTTON_COLOR)
+    mPlayButtonId = NewWidget()->SetText(S_PLAY)->SetTextColor(PLAY_BUTTON_COLOR)
             ->SetCenter(BUTTON_PLAY_POS)->SetSize(BUTTON_SIZE)
             ->SetFontScale(BUTTON_PLAY_FONT_SCALE)->SetIsButton(true)
             ->SetTransition(UiWidget::TRANS_FROM_LEFT)->GetId();
@@ -168,7 +169,7 @@ void WelcomeScene::OnCreateWidgets() {
             ->SetSize(NAME_EDIT_SIZE)->SetIsButton(true);
 
     // quit button
-    mQuitButtonId = NewWidget()->SetTextColor(BUTTON_COLOR)->SetText(S_QUIT)
+    mQuitButtonId = NewWidget()->SetTextColor(QUIT_BUTTON_COLOR)->SetText(S_QUIT)
             ->SetCenter(BUTTON_QUIT_POS)->SetSize(BUTTON_SIZE)
             ->SetFontScale(BUTTON_FONT_SCALE)->SetIsButton(true)
             ->SetTransition(UiWidget::TRANS_FROM_RIGHT)->GetId();
